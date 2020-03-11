@@ -1,0 +1,27 @@
+processor	: 7
+vendor_id	: AuthenticAMD
+cpu family	: 23
+model		: 17
+model name	: AMD Ryzen Embedded V1605B with Radeon Vega Gfx
+stepping	: 0
+microcode	: 0x810100b
+cpu MHz		: 1460.214
+cache size	: 512 KB
+physical id	: 0
+siblings	: 8
+core id		: 3
+cpu cores	: 4
+apicid		: 7
+initial apicid	: 7
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+
+gcc (Ubuntu 8.3.0-6ubuntu1) 8.3.0
+
+ubuntu 19.04: Linux ryzen1 5.2.10-050210-generic #201908251538 SMP Sun Aug 25 15:40:17 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux
+
+MemTotal:       31849064 kB
+
+
