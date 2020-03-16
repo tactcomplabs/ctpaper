@@ -29,5 +29,7 @@ plot  './lnxbuild01/STRIDE1_ADD.txt' using 1:3 with linespoints title 'Xeon X565
       './i7-3930K/STRIDE1_ADD.txt' using 1:3 with linespoints title 'Core i7-3930K \@ 3.20Ghz ADD',\
       './i7-3930K/STRIDE1_CAS.txt' using 1:3 with linespoints title 'Core i7-3930K \@ 3.20Ghz CAS',\
       './i7-4980HQ/STRIDE1_ADD.txt' using 1:3 with linespoints title 'Core i7-4980HQ \@ 2.80Ghz ADD',\
-      './i7-4980HQ/STRIDE1_CAS.txt' using 1:3 with linespoints title 'Core i7-4980HQ \@ 2.80Ghz CAS'
+      './i7-4980HQ/STRIDE1_CAS.txt' using 1:3 with linespoints title 'Core i7-4980HQ \@ 2.80Ghz CAS',\
+      './ryzen1/STRIDE1_ADD.txt' using 1:3 with linespoints title 'AMD Ryzen V1605B \@ 1.40Ghz ADD',\
+      './ryzen1/STRIDE1_CAS.txt' using 1:3 with linespoints title 'AMD Ryzen V1605B \@ 1.40Ghz CAS'
 

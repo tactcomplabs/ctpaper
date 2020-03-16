@@ -29,5 +29,7 @@ plot  './lnxbuild01/RAND_ADD.txt' using 1:3 with linespoints title 'Xeon X5650 A
       './i7-3930K/RAND_ADD.txt' using 1:3 with linespoints title 'Core i7-3930K \@ 3.20Ghz ADD',\
       './i7-3930K/RAND_CAS.txt' using 1:3 with linespoints title 'Core i7-3930K \@ 3.20Ghz CAS',\
       './i7-4980HQ/RAND_ADD.txt' using 1:3 with linespoints title 'Core i7-4980HQ \@ 2.80Ghz ADD',\
-      './i7-4980HQ/RAND_CAS.txt' using 1:3 with linespoints title 'Core i7-4980HQ \@ 2.80Ghz CAS'
+      './i7-4980HQ/RAND_CAS.txt' using 1:3 with linespoints title 'Core i7-4980HQ \@ 2.80Ghz CAS',\
+      './ryzen1/RAND_ADD.txt' using 1:3 with linespoints title 'AMD Ryzen V1605B \@ 1.40Ghz ADD',\
+      './ryzen1/RAND_CAS.txt' using 1:3 with linespoints title 'AMD Ryzen V1605B \@ 1.40Ghz CAS'
 
