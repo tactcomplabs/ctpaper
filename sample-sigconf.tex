@@ -295,7 +295,7 @@ AMO(ARRAY[dest], val) // ARRAY[dest] = val
 \begin{table}
   \caption{Atomic Operation Distribution}
   \label{tab:amodistro}
-  \begin{tabular}{cl}
+  \begin{tabular}{cc}
     \toprule
     Benchmark&AMOs Per Iteration\\
     \midrule
@@ -328,11 +328,11 @@ Core i5-3210M&2.5Ghz&4&1&3MiB&4GiB&macOS 10.13.6&clang 9.1.0\\
 Opteron 4130&800Mhz&4&2&512MiB&64GiB&Centos7 3.10.0-957.12.1&GCC 8.3.1\\
 Cortex-A72&1.5Ghz&4&1&1MiB&4GiB&NNN&NNN\\
 Cortex-A53&1.4Ghz&4&1&64KiB&512MiB&NNN&NNN\\
-Xeon-E5-2620&2.6Ghz&12&1&16MiB&NNN&Ubuntu 16.04 NNN&NNN\\
-Xeon-E5-2670&2.5Ghz&10&2&24MiB&NNN&Centos7 NNN&NNN\\
-Xeon-E5-2695&2.10Ghz&36&2&48MiB&NNN&Centos7 NNN&NNN\\
-i7-3930K&3.20Ghz&12&1&12MiB&NNN&Linux Mint 18.3 NNN&NNN\\
-i7-4980HQ&2.80Ghz&8&1&16MiB&64GiB&macOS 10.15.3&Apple clang 11.0.0\\ 
+Xeon-E5-2620&2.6Ghz&12&1&16MiB&64GiB&Ubuntu 16.04 4.4.0-164&GCC 5.4.0\\
+Xeon-E5-2670&2.5Ghz&10&2&24MiB&NNN&Centos7 3.10.0&GCC 7.3.0\\
+Xeon-E5-2695&2.10Ghz&36&2&48MiB&192GiB&Centos7 NNN&NNN\\
+i7-3930K&3.20Ghz&12&1&12MiB&64GiB&Linux Mint 18.3 NNN&NNN\\
+i7-4980HQ&2.80Ghz&8&1&16MiB&16GiB&macOS 10.15.3&GCC 9.2.0\\
 Ryzen V1605B&1.4Ghz&8&1&512KiB&32GiB&Ubuntu 19.04 5.2.10&GCC 8.3.0\\
 \bottomrule
 \end{tabular}

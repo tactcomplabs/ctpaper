@@ -1,7 +1,7 @@
 #-- RAND_CAMS.gnuplot
 
 set pointintervalbox 3
-set term png size 1920,1080 enhanced font 'Verdana,16'
+set term png size 1920,1080 enhanced font 'Verdana,24'
 set title "Random Benchmark GAMS"
 set output "RAND_GAMS.png"
 set ylabel "Giga AMOs/sec (GAMS)"
