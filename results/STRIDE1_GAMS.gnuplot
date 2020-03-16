@@ -1,7 +1,7 @@
 #-- STRIDE1_CAMS.gnuplot
 
 set pointintervalbox 3
-set term png size 1920,1080
+set term png size 1920,1080 enhanced font 'Verdana,16'
 set title "Stride1 Benchmark GAMS"
 set output "STRIDE1_GAMS.png"
 set ylabel "Giga AMOs/sec (GAMS)"

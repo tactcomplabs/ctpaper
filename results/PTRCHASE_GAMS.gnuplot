@@ -1,7 +1,7 @@
 #-- CENTRAL_GAMS.gnuplot
 
 set pointintervalbox 3
-set term png size 1920,1080
+set term png size 1920,1080 enhanced font 'Verdana,16'
 set title "Pointer Chase Benchmark GAMS"
 set output "PTRCHASE_GAMS.png"
 set ylabel "Giga AMOs/sec (GAMS)"

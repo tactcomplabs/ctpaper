@@ -1,7 +1,7 @@
 #-- STRIDEN_CAMS.gnuplot
 
 set pointintervalbox 3
-set term png size 1920,1080
+set term png size 1920,1080 enhanced font 'Verdana,16'
 set title "StrideN Benchmark GAMS"
 set output "STRIDEN_GAMS.png"
 set ylabel "Giga AMOs/sec (GAMS)"

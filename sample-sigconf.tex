@@ -23,6 +23,8 @@
 %%
 %% The first command in your LaTeX source must be the \documentclass command.
 \documentclass[sigconf]{acmart}
+\usepackage[ruled,vlined]{algorithm2e}
+\SetKw{KwBy}{by}
 
 %%
 %% \BibTeX command to typeset BibTeX logo in the docs
@@ -106,6 +108,15 @@
   \state{Texas}
   \postcode{79409-3104}}
 \email{xi.wang@ttu.edu}
+
+\author{David Donofrio}
+\email{ddonofrio@tactcomplabs.com}
+\affiliation{%
+  \institution{Tactical Computing Laboratories}
+  \city{San Francisco}
+  \state{California}
+  \postcode{94102}
+}
 
 \author{Yong Chen}
 \affiliation{%A
@@ -201,11 +212,191 @@
 
 \subsection{Programming Models}
 
-\subsection{Algorithmic Descriptions}
+\subsection{Algorithms}
+
+\begin{algorithm}
+\SetAlgoLined
+\For{$i\gets0$ \KwTo $iters$ \KwBy $1$}{
+AMO(ARRAY[IDX[i]])
+}
+\caption{Random Access Benchmark}
+\end{algorithm}
+
+\begin{algorithm}
+\SetAlgoLined
+\For{$i\gets0$ \KwTo $iters$ \KwBy $1$}{
+AMO(ARRAY[i])
+}
+\caption{Stride-1 Benchmark}
+\end{algorithm}
+
+\begin{algorithm}
+\SetAlgoLined
+\For{$i\gets0$ \KwTo $iters$ \KwBy $stride$}{
+AMO(ARRAY[i])
+}
+\caption{Stride-N Benchmark}
+\end{algorithm}
+
+\begin{algorithm}
+\SetAlgoLined
+\For{$i\gets0$ \KwTo $iters$ \KwBy $1$}{
+start = AMO(IDX[start])
+}
+\caption{Pointer Chase Benchmark}
+\end{algorithm}
+
+\begin{algorithm}
+\SetAlgoLined
+\For{$i\gets0$ \KwTo $iters$ \KwBy $1$}{
+AMO(ARRAY[0])
+}
+\caption{Central Benchmark}
+\end{algorithm}
+
+\begin{algorithm}
+\SetAlgoLined
+\For{$i\gets0$ \KwTo $iters$ \KwBy $1$}{
+dest = AMO(IDX[i+1])\\
+val = AMO(ARRAY[i])\\
+AMO(ARRAY[dest], val) // ARRAY[dest] = val
+}
+\caption{Scatter Benchmark}
+\end{algorithm}
+
+\begin{algorithm}
+\SetAlgoLined
+\For{$i\gets0$ \KwTo $iters$ \KwBy $1$}{
+dest = AMO(IDX[i+1])\\
+val = AMO(ARRAY[dest])\\
+AMO(ARRAY[i], val) // ARRAY[i] = val
+}
+\caption{Gather Benchmark}
+\end{algorithm}
+
+\begin{algorithm}
+\SetAlgoLined
+\For{$i\gets0$ \KwTo $iters$ \KwBy $1$}{
+src = AMO(IDX[i])\\
+dest = AMO(IDX[i+1])\\
+val = AMO(ARRAY[src])\\
+AMO(ARRAY[dest], val) // ARRAY[dest] = val
+}
+\caption{Scatter/Gather Benchmark}
+\end{algorithm}
+
+\begin{table}
+  \caption{Atomic Operation Distribution}
+  \label{tab:amodistro}
+  \begin{tabular}{cl}
+    \toprule
+    Benchmark&AMOs Per Iteration\\
+    \midrule
+   Rand & 1\\
+   Stride-1 & 1\\
+   Stride-N & 1\\
+   Pointer Chase & 1\\
+   Central & 1\\
+   Scatter & 3\\
+   Gather & 3\\
+   Scatter/Gather & 4\\
+  \bottomrule
+\end{tabular}
+\end{table}
 
 \section{Benchmark Evaluation}
 
+\subsection{Methodology}
+
+\begin{table*}
+\caption{Benchmark System Configurations}
+\label{tab:benchsys}
+\begin{tabular}{cccccccc}
+\toprule
+System&Clock&Threads/Socket&Sockets&Cache/Socket&MemSize&OS&Compiler\\
+\midrule
+Xeon-X5650&2.67Ghz&6&2&12MiB&64GiB&Ubuntu 18.04 4.15.0-88 & GCC 7.5.0\\
+Xeon-X5620&2.4Ghz&6&2&12MiB&48GiB&Ubuntu 16.04 4.4.0-87 & GCC 5.4.0\\
+Core i5-3210M&2.5Ghz&4&1&3MiB&4GiB&macOS 10.13.6&clang 9.1.0\\
+Opteron 4130&800Mhz&4&2&512MiB&64GiB&Centos7 3.10.0-957.12.1&GCC 8.3.1\\
+Cortex-A72&1.5Ghz&4&1&1MiB&4GiB&NNN&NNN\\
+Cortex-A53&1.4Ghz&4&1&64KiB&512MiB&NNN&NNN\\
+Xeon-E5-2620&2.6Ghz&12&1&16MiB&NNN&Ubuntu 16.04 NNN&NNN\\
+Xeon-E5-2670&2.5Ghz&10&2&24MiB&NNN&Centos7 NNN&NNN\\
+Xeon-E5-2695&2.10Ghz&36&2&48MiB&NNN&Centos7 NNN&NNN\\
+i7-3930K&3.20Ghz&12&1&12MiB&NNN&Linux Mint 18.3 NNN&NNN\\
+i7-4980HQ&2.80Ghz&8&1&16MiB&64GiB&macOS 10.15.3&Apple clang 11.0.0\\ 
+Ryzen V1605B&1.4Ghz&8&1&512KiB&32GiB&Ubuntu 19.04 5.2.10&GCC 8.3.0\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Results}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3.5in]{figures/CENTRAL_GAMS.png}
+\caption{Central Benchmark GAMS}
+\label{fig:central_gams}
+\end{figure}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3.5in]{figures/PTRCHASE_GAMS.png}
+\caption{Pointer Chase Benchmark GAMS}
+\label{fig:ptrchase_gams}
+\end{figure}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3.5in]{figures/RAND_GAMS.png}
+\caption{Random Benchmark GAMS}
+\label{fig:rand_gams}
+\end{figure}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3.5in]{figures/SCATTER_GAMS.png}
+\caption{Scatter Benchmark GAMS}
+\label{fig:scatter_gams}
+\end{figure}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3.5in]{figures/GATHER_GAMS.png}
+\caption{Gather Benchmark GAMS}
+\label{fig:gather_gams}
+\end{figure}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3.5in]{figures/SG_GAMS.png}
+\caption{Scatter/Gather Benchmark GAMS}
+\label{fig:sg_gams}
+\end{figure}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3.5in]{figures/STRIDE1_GAMS.png}
+\caption{Stride-1 Benchmark GAMS}
+\label{fig:s1_gams}
+\end{figure}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3.5in]{figures/STRIDEN_GAMS.png}
+\caption{Stride-N Benchmark GAMS}
+\label{fig:sn_gams}
+\end{figure}
+
 \section{Conclusions}
+
+\section{Future Work}
+
+\begin{acks}
+Research reported in this publication was supported by the U.S. Department of Defense
+under Contract FA8075$-$14$-$D$-$0002.
+\end{acks}
 
 %---- END CTPAPER
 
