@@ -1,4 +1,4 @@
-#-- CENTRAL_GAMS.gnuplot
+#-- PTRCHASE_GAMS.gnuplot
 
 set pointintervalbox 3
 set term png size 1920,1080 enhanced font 'Verdana,24'
@@ -31,5 +31,9 @@ plot  './lnxbuild01/PTRCHASE_ADD.txt' using 1:3 with linespoints title 'Xeon X56
       './i7-4980HQ/PTRCHASE_ADD.txt' using 1:3 with linespoints title 'Core i7-4980HQ \@ 2.80Ghz ADD',\
       './i7-4980HQ/PTRCHASE_CAS.txt' using 1:3 with linespoints title 'Core i7-4980HQ \@ 2.80Ghz CAS',\
       './ryzen1/PTRCHASE_ADD.txt' using 1:3 with linespoints title 'AMD Ryzen V1605B \@ 1.40Ghz ADD',\
-      './ryzen1/PTRCHASE_CAS.txt' using 1:3 with linespoints title 'AMD Ryzen V1605B \@ 1.40Ghz CAS'
+      './ryzen1/PTRCHASE_CAS.txt' using 1:3 with linespoints title 'AMD Ryzen V1605B \@ 1.40Ghz CAS',\
+      './other/knl/PTRCHASE_ADD.txt' using 1:3 with linespoints title 'Xeon Phi 7250\@ 1.40Ghz ADD',\
+      './other/knl/PTRCHASE_CAS.txt' using 1:3 with linespoints title 'Xeon Phi 7250\@ 1.40Ghz CAS',\
+      './other/xeon_haswell/PTRCHASE_ADD.txt' using 1:3 with linespoints title 'Xeon E5-2698 \@ 2.30Ghz ADD',\
+      './other/xeon_haswell/PTRCHASE_CAS.txt' using 1:3 with linespoints title 'Xeon E5-2698 \@ 2.30Ghz CAS'
 

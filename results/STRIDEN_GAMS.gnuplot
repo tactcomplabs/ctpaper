@@ -31,5 +31,9 @@ plot  './lnxbuild01/STRIDEN_ADD.txt' using 1:3 with linespoints title 'Xeon X565
       './i7-4980HQ/STRIDEN_ADD.txt' using 1:3 with linespoints title 'Core i7-4980HQ \@ 2.80Ghz ADD',\
       './i7-4980HQ/STRIDEN_CAS.txt' using 1:3 with linespoints title 'Core i7-4980HQ \@ 2.80Ghz CAS',\
       './ryzen1/STRIDEN_ADD.txt' using 1:3 with linespoints title 'AMD Ryzen V1605B \@ 1.40Ghz ADD',\
-      './ryzen1/STRIDEN_CAS.txt' using 1:3 with linespoints title 'AMD Ryzen V1605B \@ 1.40Ghz CAS'
+      './ryzen1/STRIDEN_CAS.txt' using 1:3 with linespoints title 'AMD Ryzen V1605B \@ 1.40Ghz CAS',\
+      './other/knl/STRIDEN_ADD.txt' using 1:3 with linespoints title 'Xeon Phi 7250\@ 1.40Ghz ADD',\
+      './other/knl/STRIDEN_CAS.txt' using 1:3 with linespoints title 'Xeon Phi 7250\@ 1.40Ghz CAS',\
+      './other/xeon_haswell/STRIDEN_ADD.txt' using 1:3 with linespoints title 'Xeon E5-2698 \@ 2.30Ghz ADD',\
+      './other/xeon_haswell/STRIDEN_CAS.txt' using 1:3 with linespoints title 'Xeon E5-2698 \@ 2.30Ghz CAS'
 

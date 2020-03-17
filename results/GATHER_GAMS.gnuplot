@@ -31,5 +31,9 @@ plot  './lnxbuild01/GATHER_ADD.txt' using 1:3 with linespoints title 'Xeon X5650
       './i7-4980HQ/GATHER_ADD.txt' using 1:3 with linespoints title 'Core i7-4980HQ \@ 2.80Ghz ADD',\
       './i7-4980HQ/GATHER_CAS.txt' using 1:3 with linespoints title 'Core i7-4980HQ \@ 2.80Ghz CAS',\
       './ryzen1/GATHER_ADD.txt' using 1:3 with linespoints title 'AMD Ryzen V1605B \@ 1.40Ghz ADD',\
-      './ryzen1/GATHER_CAS.txt' using 1:3 with linespoints title 'AMD Ryzen V1605B \@ 1.40Ghz CAS'
+      './ryzen1/GATHER_CAS.txt' using 1:3 with linespoints title 'AMD Ryzen V1605B \@ 1.40Ghz CAS',\
+      './other/knl/GATHER_ADD.txt' using 1:3 with linespoints title 'Xeon Phi 7250\@ 1.40Ghz ADD',\
+      './other/knl/GATHER_CAS.txt' using 1:3 with linespoints title 'Xeon Phi 7250\@ 1.40Ghz CAS',\
+      './other/xeon_haswell/GATHER_ADD.txt' using 1:3 with linespoints title 'Xeon E5-2698 \@ 2.30Ghz ADD',\
+      './other/xeon_haswell/GATHER_CAS.txt' using 1:3 with linespoints title 'Xeon E5-2698 \@ 2.30Ghz CAS'
 
