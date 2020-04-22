@@ -18,40 +18,66 @@ CircusTent
 \subsection{Algorithms}
 \label{subsec:algorithms}
 
-\begin{algorithm}
-\SetAlgoLined
-\For{$i\gets0$ \KwTo $iters$ \KwBy $1$}{
-AMO(ARRAY[IDX[i]])
-}
-\caption{Random Access Benchmark}
-\label{alg:rand}
-\end{algorithm}
+The CircusTent infrastructure contains eight individual benchmark kernels.
+Each kernel is described in terms of a generic atomic operation, \textit{AMO}.  
+However, each kernel may be implemented using any platform-supported atomic operations.
+In the case of this study, we utilize atomic \textit{Add} and atomic \textit{Compare-and-Swap} (CAS) operations to implement each kernel, respectively.  
+
+The first kernel is a basic random access kernel (Algorithm~\ref{alg:1}).
+The kernel allocates two array structures.
+The \texttt{VAL} array contains a series of values.
+The \texttt{IDX} array contains a series of valid indices within the scope of the \texttt{VAL} array.
+Prior to the execution of the kernel, the indices are randomly selected and written to the \texttt{IDX} array using a linear congruential randomizer.
+For each iteration of the loop, a single \texttt{VAL} array entry is updated using an atomic operation.
+In this manner, the random access kernel contains one memory load (\texttt{IDX[i]}) and one atomic operation for each iteration of the loop.
+The goal of this kernel is to observe the performance of atomic operations when the platform has a limited ability to cache data for subsequent iterations.  
 
 \begin{algorithm}
 \SetAlgoLined
 \For{$i\gets0$ \KwTo $iters$ \KwBy $1$}{
-AMO(ARRAY[i])
+AMO(VAL[IDX[i]])
 }
-\caption{Stride-1 Benchmark}
-\label{alg:s1}
+\caption{Random Access Kernel}
+\label{alg:1}
 \end{algorithm}
+
+The second kernel encapsulates a simple, stride-1 kernel (Algorithm~\ref{alg:2}).  
+The kernel allocates a single array (\texttt{VAL}) that contains a series of values.  
+For each iteration of the loop, the kernel updates a single value in the array in linear fashion using a single atomic operation.
+In this manner, a platform may utilize data prefetching and/or caching in order to optimize the access to data members in this kernel in an optimal manner similar in form to dense vectors or matrices.  
+
+\begin{algorithm}
+\SetAlgoLined
+\For{$i\gets0$ \KwTo $iters$ \KwBy $1$}{
+AMO(VAL[i])
+}
+\caption{Stride-1 Kernel}
+\label{alg:2}
+\end{algorithm}
+
+The third kernel is similar in form to the second kernel.
+In this kernel, we utilize the same \texttt{VAL} array structure as mentioned above, but we permit the user to define the unit stride by which we access the array (Algorithm~\ref{alg:3}).  
+For example, if the user seeks to determine what the raw memory bandwidth is of parallel atomics by forcing every access to induce a cache line miss, the stride-n kernel can accomplish this.
+Further, for each parallel PE participating in the kernel execution, the starting index is at least \textit{iters} distance from the previous PE. 
 
 \begin{algorithm}
 \SetAlgoLined
 \For{$i\gets0$ \KwTo $iters$ \KwBy $stride$}{
 AMO(ARRAY[i])
 }
-\caption{Stride-N Benchmark}
-\label{alg:sn}
+\caption{Stride-N Kernel}
+\label{alg:3}
 \end{algorithm}
+
+The fourth
 
 \begin{algorithm}
 \SetAlgoLined
 \For{$i\gets0$ \KwTo $iters$ \KwBy $1$}{
 start = AMO(IDX[start])
 }
-\caption{Pointer Chase Benchmark}
-\label{alg:ptrchase}
+\caption{Pointer Chase Kernel}
+\label{alg:4}
 \end{algorithm}
 
 \begin{algorithm}
@@ -59,8 +85,8 @@ start = AMO(IDX[start])
 \For{$i\gets0$ \KwTo $iters$ \KwBy $1$}{
 AMO(ARRAY[0])
 }
-\caption{Central Benchmark}
-\label{alg:central}
+\caption{Central Kernel}
+\label{alg:5}
 \end{algorithm}
 
 \begin{algorithm}
@@ -70,8 +96,8 @@ dest = AMO(IDX[i+1])\\
 val = AMO(ARRAY[i])\\
 AMO(ARRAY[dest], val) // ARRAY[dest] = val
 }
-\caption{Scatter Benchmark}
-\label{alg:scatter}
+\caption{Scatter Kernel}
+\label{alg:6}
 \end{algorithm}
 
 \begin{algorithm}
@@ -81,8 +107,8 @@ dest = AMO(IDX[i+1])\\
 val = AMO(ARRAY[dest])\\
 AMO(ARRAY[i], val) // ARRAY[i] = val
 }
-\caption{Gather Benchmark}
-\label{alg:gather}
+\caption{Gather Kernel}
+\label{alg:7}
 \end{algorithm}
 
 \begin{algorithm}
@@ -93,9 +119,25 @@ dest = AMO(IDX[i+1])\\
 val = AMO(ARRAY[src])\\
 AMO(ARRAY[dest], val) // ARRAY[dest] = val
 }
-\caption{Scatter/Gather Benchmark}
-\label{alg:sg}
+\caption{Scatter/Gather Kernel}
+\label{alg:8}
 \end{algorithm}
+
+\subsection{Normalizing the Results}
+\label{subsec:normalizingtheresults}
+
+Given the native extensibility of CircusTent to support a multitude of programming models and platforms, we seek to develop a normalized metric such that we can compare results across platforms and differing degrees of execution parallelism.
+For this, we introduce the \textit{GAMs} metric.  
+
+The \textit{GAMs}, or \textit{billions of atomic operations per second}, metric encapsulates the number of parallel execution elements (\textit{PEs}), the atomic operation algorithmic complexity, and the wall clock execution time in a single metric.
+As we see in Equation~\ref{eq:gams}, the metric is a ratio of the total number of atomic operations executed for all parallel parallel execution elements (in billions) across all iterations and the wall clock execution time.
+The atomic operation algorithmic complexity is the total number of atomic operations required for a single \textit{PE} to execute a single iteration of the target CircusTent kernel.
+This is equivalent to the \textit{AMOs Per Iteration} column in Table~\ref{tab:amodistro}.  
+
+\begin{equation}
+\label{eq:gams}
+  GAMs = \frac{(PEs \times Iters \times AMOs\_Per\_Iter)/1e^{9}}{time}
+\end{equation}
 
 \begin{table}
   \caption{Atomic Operation Distribution}
