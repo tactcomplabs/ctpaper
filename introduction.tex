@@ -1,7 +1,7 @@
 % Introduction Section
 
 The impending demise of Moore's Law has produced a renaissance in the field of computer architecture.
-Unable to continue leveraging increasing processor frequencies to further improve performance and scalability, system architects been have forced to explore other options.
+Unable to continue leveraging increasing processor frequencies to further improve performance and scalability, system architects have been forced to explore other options.
 In this new era of heterogeneous architectures and hardware/software codesign, parallel processing and associated programming paradigms have become of paramount importance.
 Alongside an increased prominence in traditional high performance computing (HPC) environments in academia, government laboratories, and industry, parallel processing has also become imperative for consumer-level devices.
 As such, a better understanding of the behavior of parallel applications, and their interaction with the architectures they run on, is highly desirable in order to ensure optimal performance.
@@ -14,14 +14,14 @@ Given the impact synchronization plays on the scalability and performance of par
 
 In many cases, the synchronization primitives described above are constructed using atomic memory operations (AMOs).
 Abstractly, an atomic memory operation can be defined as an operation that is uninterruptible.
-Although an atomic operation may be composed of several smaller "sub-operations" that would, under other circumstances, necessitate the execution of multiple instructions to complete, herein these sub-operations are treated as a single, cohesive unit.
+Although an atomic operation may be composed of several smaller ``sub-operations'' that would, under other circumstances, necessitate the execution of multiple instructions to complete, herein these sub-operations are treated as a single, cohesive unit.
 In this work, we focus on a particularly prominent class of atomic memory operations known as read-modify-write (RMW) atomics.
 Most modern architectures, including x86, RISC-V, and those produced by ARM, include ISA-level RMW atomic instructions and provide microarchitectural support for realization of their execution.
 As their designation would suggest, RMW atomics load a single value of a given data type into a specified register, modify said value, and finally write it back to memory in one unified step.
 In this manner, RMW atomic operations can be utilized to safely set variables underlying more complex synchronization primitives, such as barriers and locks, in parallel environments.
 
 Further, RMW atomics also constitute a particularly efficient and fine-grained synchronization primitive in and of themselves.
-In many cases, application developers can replace mutex lock encapsulated critical code segments with "lock-free" atomic based synchronization.
+In many cases, application developers can replace mutex lock encapsulated critical code segments with ``lock-free'' atomic based synchronization.
 Doing so allows parallel execution to continue to the greatest degree possible and often significantly improves application performance.
 Many graph-based computational kernels, wherein only access to shared vertex and/or edge data need be coordinated, employ such an atomic-based synchronization scheme.
 In our previous work, we examined the GAP Benchmark Suite, which is designed to replicate the memory access patterns of graph workloads in a shared memory environment, in order to quantify the proportion of atomic operations \cite{beamer2015gap}.
@@ -31,11 +31,14 @@ In this and similar scenarios, the frequency of atomic memory operations results
 A variety of different shared and distributed memory parallel programming paradigms exist today in order to provide efficient scaling both within a single node, and across distinct nodes, respectively.
 Unsurprisingly, variants of high-level synchronization constructs and atomic memory operations are critical for physically shared memory paradigms as well as distributed memory paradigms that utilize a shared memory abstraction.
 For models designed specifically for physically shared memory systems, such as OpenMP or Pthreads, high-level synchronization primitives and API level atomic operations can be realized through simple wrappers around the appropriate ISA-level atomic instructions.
-However, for distributed shared memory parallel programming models, the implementation of "remote atomics" and associated synchronization primitives is more complex.
+However, for distributed shared memory parallel programming models, the implementation of ``remote atomics'' and associated synchronization primitives is more complex.
 In these models, access to a node's local shared memory must be coordinated not only between local PEs, but also among those located across a network fabric.
 Therefore, these remote atomic operations are typically built upon some combination of RDMA verbs, local barrier synchronizations, and ISA-level atomic instructions \cite{chen2017rdmahtm}\cite{kalia2016rdmadesign}.
 Utilizing a node's network interface card (NIC) to perform the local atomic operations can further optimize system performance in these models \cite{rae}.
 The prevalence of distributed memory environments in high performance computing, in conjunction with inherent limits to mulitcore scaling \cite{esmaeilzadeh2011silicon}, illustrate the need to understand the behavior of these remote atomic operations when designing future systems.
+
+\todo[inline]{The intro section is a bit long as of now; the above paragraph 
+can be considered to move to Sec. 2, as a background discussion. -Yong}
 
 In this work, we propose CircusTent, an open source, modular, and natively extensible benchmark suite for atomic operations.
 Designed to replicate common atomic memory access patterns in both shared and distributed memory environments, CircusTent provides system architects insight into the performance and scalability of a target architecture's memory hierarchy.
