@@ -8,29 +8,52 @@ Benchmark Evaluation
 \begin{table*}
 \caption{Benchmark System Configurations}
 \label{tab:benchsys}
-\begin{tabular}{cccccccc}
+\begin{tabular}{ccccccccc}
 \toprule
-System&Clock&Threads/Socket&Sockets&Cache/Socket&MemSize&OS&Compiler\\
+System&Clock&Cores/Socket&Sockets&LLC Size/Socket&Total Memory&Array Size&OS&Compiler\\
 \midrule
-Xeon-X5650&2.67Ghz&12&2&12MiB&64GiB&Ubuntu 18.04 4.15.0-88 & GCC 7.5.0\\
-Xeon-E5620&2.4Ghz&8&2&12MiB&48GiB&Ubuntu 16.04 4.4.0-87 & GCC 5.4.0\\
-Core i5-3210M&2.5Ghz&4&1&3MiB&4GiB&macOS 10.13.6&clang 9.1.0\\
-Opteron 4130&800Mhz&4&2&512MiB&64GiB&Centos7 3.10.0-957.12.1&GCC 8.3.1\\
-Cortex-A72&1.5Ghz&4&1&1MiB&4GiB&NNN&NNN\\
-Cortex-A53&1.4Ghz&4&1&64KiB&512MiB&NNN&NNN\\
-Xeon-E5-2620&2.4Ghz&12&1&15MiB&64GiB&Ubuntu 16.04 4.4.0-164&GCC 5.4.0\\
-Xeon-E5-2670&2.5Ghz&10&2&25MiB&64GiB&Centos7 3.10.0&GCC 7.3.0\\
-Xeon-E5-2695&2.1Ghz&36&2&45MiB&192GiB&Centos7 3.10.0&GCC 7.3.0\\
-i7-3930K&3.2Ghz&12&1&12MiB&64GiB&Linux Mint 18.3 4.15.0-46&GCC 5.4.0\\
-i7-4980HQ&2.8Ghz&8&1&6MiB&16GiB&macOS 10.15.3&GCC 9.2.0\\
-Ryzen V1605B&1.4Ghz&8&1&512KiB&32GiB&Ubuntu 19.04 5.2.10&GCC 8.3.0\\
-Xeon Phi 7250&1.4Ghz&272&1&1MiB&96GiB&SLES 4.12.14&GCC 8.3.0\\
-Xeon E5-2698&2.3Ghz&32&2&40MiB&128GiB&SLES 4.12.14&GCC 8.3.0\\
+Cortex-A53&1.40Ghz&4&1&64KiB&512MiB&NNN&NNN&NNN\\
+Cortex-A72&1.50Ghz&4&1&1MiB&4GiB&NNN&NNN&NNN\\
+Ryzen V1605B&NNN&4&1&NNN&32GiB&NNN&Ubuntu 19.04 5.2.10&GCC 8.3.0\\
+Opteron 4130&2.60Ghz&4&2&6MiB&64GiB&NNN&Centos7 3.10.0-957.12.1&GCC 8.3.1\\
+Core i5-3210M&2.50Ghz&2&1&3MiB&4GiB&NNN&macOS 10.13.6&clang 9.1.0\\
+Core i7-3930K&3.20Ghz&6&1&12MiB&64GiB&NNN&Linux Mint 18.3 4.15.0-46&GCC 5.4.0\\
+Core i7-4980HQ&2.80Ghz&4&1&6MiB L3 + 128MiB L4&16GiB&NNN&macOS 10.15.3&GCC 9.2.0\\
+Xeon Phi 7250&1.40Ghz&68&1&16GiB MCDRAM&96GiB&NNN&SLES 4.12.14&GCC 8.3.0\\
+Xeon E5620&2.40Ghz&4&2&12MiB&48GiB&NNN&Ubuntu 16.04 4.4.0-87&GCC 5.4.0\\
+Xeon X5650&2.67Ghz&6&2&12MiB&64GiB&NNN&Ubuntu 18.04 4.15.0-88&GCC 7.5.0\\
+Xeon E5-2620 v3&2.40Ghz&6&1&15MiB&64GiB&NNN&Ubuntu 16.04 4.4.0-164&GCC 5.4.0\\
+Xeon E5-2670 v2&2.50Ghz&10&2&25MiB&64GiB&NNN&Centos7 3.10.0&GCC 7.3.0\\
+Xeon E5-2695 v4&2.10Ghz&18&2&45MiB&192GiB&NNN&Centos7 3.10.0&GCC 7.3.0\\
+Xeon E5-2698 v3&2.30Ghz&16&2&40MiB&128GiB&NNN&SLES 4.12.14&GCC 8.3.0\\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-\todo{Notate disabled SMT on Xeon E5-2670??, 4980hq crystalwell cache, phi 7250 - 16GB HMC/MCDRAM + 1MB x 34 cache}
+%\begin{table*}
+%\caption{Benchmark System Configurations}
+%\label{tab:benchsys}
+%\begin{tabular}{cccccccc}
+%\toprule
+%System&Clock&Threads/Socket&Sockets&Cache/Socket&MemSize&OS&Compiler\\
+%\midrule
+%Xeon X5650&2.67Ghz&12&2&12MiB&64GiB&Ubuntu 18.04 4.15.0-88&GCC 7.5.0\\
+%Xeon E5620&2.40Ghz&8&2&12MiB&48GiB&Ubuntu 16.04 4.4.0-87&GCC 5.4.0\\
+%Core i5-3210M&2.50Ghz&4&1&3MiB&4GiB&macOS 10.13.6&clang 9.1.0\\
+%Opteron 4130&2.60Ghz&4&2&6MiB&64GiB&Centos7 3.10.0-957.12.1&GCC 8.3.1\\
+%Cortex-A72&1.50Ghz&4&1&1MiB&4GiB&NNN&NNN\\
+%Cortex-A53&1.40Ghz&4&1&64KiB&512MiB&NNN&NNN\\
+%Xeon E5-2620 v3&2.40Ghz&12&1&15MiB&64GiB&Ubuntu 16.04 4.4.0-164&GCC 5.4.0\\
+%Xeon E5-2670 v2&2.50Ghz&10&2&25MiB&64GiB&Centos7 3.10.0&GCC 7.3.0\\
+%Xeon E5-2695 v4&2.10Ghz&36&2&45MiB&192GiB&Centos7 3.10.0&GCC 7.3.0\\
+%i7-3930K&3.20Ghz&12&1&12MiB&64GiB&Linux Mint 18.3 4.15.0-46&GCC 5.4.0\\
+%i7-4980HQ&2.80Ghz&8&1&6MiB&16GiB&macOS 10.15.3&GCC 9.2.0\\
+%Ryzen V1605B&1.4G0hz&8&1&512KiB&32GiB&Ubuntu 19.04 5.2.10&GCC 8.3.0\\
+%Xeon Phi 7250&1.40Ghz&272&1&1MiB&96GiB&SLES 4.12.14&GCC 8.3.0\\
+%Xeon E5-2698 v3&2.30Ghz&32&2&40MiB&128GiB&SLES 4.12.14&GCC 8.3.0\\
+%\bottomrule
+%\end{tabular}
+%\end{table*}
 
 \subsection{Results}
 \label{subsec:results}
