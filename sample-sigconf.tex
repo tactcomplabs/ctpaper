@@ -24,6 +24,8 @@
 %% The first command in your LaTeX source must be the \documentclass command.
 \documentclass[sigconf]{acmart}
 \usepackage[ruled,vlined]{algorithm2e}
+\usepackage{booktabs}
+\usepackage{todonotes}
 \SetKw{KwBy}{by}
 
 %%
@@ -83,6 +85,14 @@
 %% Of note is the shared affiliation of the first two authors, and the
 %% "authornote" and "authornotemark" commands
 %% used to denote shared contribution to the research.
+\author{Brody Williams}
+\email{brody.williams@ttu.edu}
+\affiliation{%A
+  \institution{Texas Tech University}
+  \city{Lubbock}
+  \state{Texas}
+  \postcode{79409-3104}}
+
 \author{John D. Leidel}
 \email{jleidel@tactcomplabs.com}
 \orcid{0000-0002-7567-8145}
@@ -93,13 +103,13 @@
   \postcode{76252}
 }
 
-\author{Brody Williams}
-\email{brody.williams@ttu.edu}
-\affiliation{%A
-  \institution{Texas Tech University}
-  \city{Lubbock}
-  \state{Texas}
-  \postcode{79409-3104}}
+%\author{Brody Williams}
+%\email{brody.williams@ttu.edu}
+%\affiliation{%A
+ % \institution{Texas Tech University}
+ % \city{Lubbock}
+ % \state{Texas}
+ % \postcode{79409-3104}}
 
 \author{Xi Wang}
 \email{xi.wang@ttu.edu}
@@ -139,12 +149,19 @@
 %% The abstract is a short summary of the work to be presented in the
 %% article.
 \begin{abstract}
-  A clear and well-documented \LaTeX\ document is presented as an
-  article formatted for publication by ACM in a conference proceedings
-  or journal publication. Based on the ``acmart'' document class, this
-  article presents and explains many of the common variations, as well
-  as many of the formatting elements an author may use in the
-  preparation of the documentation of their work.
+ A paradigm shift is currently taking place in the field of computer architecture.
+Consistent improvements to processor frequencies, relied upon in the past to drive the augmentation of system scalability, have stalled.
+As such, it is widely believed that future systems, wherein the design of hardware and software are more closely coupled, will need to leverage an increased degree of heterogeneity in order to realize further improvements.
+
+Parallel processing and corresponding programming models, already ubiquitous to high performance computing, will play a crucial role in these systems.
+Consequently, it is critically important to understand the interaction between these components.
+However, the behavior of atomic operations and associated synchronization primitives, which already represent a bottleneck in current systems, is difficult to quantify.
+
+Therefore, in this work, we introduce CircusTent, an open source, modular, and natively extensible benchmark suite for shared and distributed memory systems that is designed to measure the performance of a target architecture?s memory subsystem with respect to atomic operations.
+Herein, we first detail the design of CircusTent, which includes eight different kernels designed to replicate common atomic memory access patterns using two atomic primitives.
+We then demonstrate the capabilities of CircusTent through an evaluation of fourteen different platforms using our OpenMP benchmark implementation.
+In short, we believe CircusTent will prove to be an invaluable tool for the design and prototyping of emerging architectures.
+
 \end{abstract}
 
 %%
@@ -204,7 +221,102 @@
 
 \section{Introduction}
 
+The impending demise of Moore's Law has produced a renaissance in the field of computer architecture.
+Unable to continue leveraging increasing processor frequencies to further improve performance and scalability, system architects have been forced to explore other options.
+In this new era of heterogeneous architectures and hardware/software codesign, parallel processing and associated programming paradigms have become of paramount importance.
+Alongside an increased prominence in traditional high performance computing (HPC) environments in academia, government laboratories, and industry, parallel processing has also become imperative for consumer-level devices.
+As such, a better understanding of the behavior of parallel applications, and their interaction with the architectures they run on, is highly desirable in order to ensure optimal performance.
+
+One well understood characteristic of parallel applications is that they frequently suffer from scalability issues as the number of cooperating processing elements (PEs) grows.
+Often, this performance degradation can be directly attributed to overheads associated with the synchronization of active PEs.
+Consequently, well written applications utilize synchronization primitives, such as barriers and mutual exclusion locks, as infrequently as possible.
+Regrettably, the nature of parallel applications typically precludes the removal of all such synchronization methods as they are necessary to prevent race conditions associated with access to shared data structures and ensure program correctness.
+Given the impact synchronization plays on the scalability and performance of parallel applications, understanding and optimization of these routines is key.
+
+In many cases, the synchronization primitives described above are constructed using atomic memory operations (AMOs).
+Abstractly, an atomic memory operation can be defined as an operation that is uninterruptible.
+Although an atomic operation may be composed of several smaller ``sub-operations'' that would, under other circumstances, necessitate the execution of multiple instructions to complete, herein these sub-operations are treated as a single, cohesive unit.
+In this work, we focus on a particularly prominent class of atomic memory operations known as read-modify-write (RMW) atomics.
+Most modern architectures, including x86, RISC-V, and those produced by ARM, include ISA-level RMW atomic instructions and provide microarchitectural support for realization of their execution.
+As their designation would suggest, RMW atomics load a single value of a given data type into a specified register, modify said value, and finally write it back to memory in one unified step.
+In this manner, RMW atomic operations can be utilized to safely set variables underlying more complex synchronization primitives, such as barriers and locks, in parallel environments.
+
+Further, RMW atomics also constitute a particularly efficient and fine-grained synchronization primitive in and of themselves.
+In many cases, application developers can replace mutex lock encapsulated critical code segments with ``lock-free'' atomic based synchronization.
+Doing so allows parallel execution to continue to the greatest degree possible and often significantly improves application performance.
+Many graph-based computational kernels, wherein only access to shared vertex and/or edge data need be coordinated, employ such an atomic-based synchronization scheme.
+In our previous work, we examined the GAP Benchmark Suite, which is designed to replicate the memory access patterns of graph workloads in a shared memory environment, in order to quantify the proportion of atomic operations \cite{beamer2015gap}.
+Therein, we found that, across all six included kernels, an average of 17.46\% of the total instructions were RMW atomic operation instructions \cite{rae}.
+In this and similar scenarios, the frequency of atomic memory operations results in contention that, while less significant than lock-based synchronization, has measurable effects on application performance.
+
+A variety of different shared and distributed memory parallel programming paradigms exist today in order to provide efficient scaling both within a single node, and across distinct nodes, respectively.
+Unsurprisingly, variants of high-level synchronization constructs and atomic memory operations are critical for physically shared memory paradigms as well as distributed memory paradigms that utilize a shared memory abstraction.
+For models designed specifically for physically shared memory systems, such as OpenMP or Pthreads, high-level synchronization primitives and API level atomic operations can be realized through simple wrappers around the appropriate ISA-level atomic instructions.
+However, for distributed shared memory parallel programming models, the implementation of ``remote atomics'' and associated synchronization primitives is more complex.
+In these models, access to a node's local shared memory must be coordinated not only between local PEs, but also among those located across a network fabric.
+Therefore, these remote atomic operations are typically built upon some combination of RDMA verbs, local barrier synchronizations, and ISA-level atomic instructions \cite{chen2017rdmahtm}\cite{kalia2016rdmadesign}.
+Utilizing a node's network interface card (NIC) to perform the local atomic operations can further optimize system performance in these models \cite{rae}.
+The prevalence of distributed memory environments in high performance computing, in conjunction with inherent limits to mulitcore scaling \cite{esmaeilzadeh2011silicon}, illustrate the need to understand the behavior of these remote atomic operations when designing future systems.
+
+\todo[inline]{The intro section is a bit long as of now; the above paragraph 
+can be considered to move to Sec. 2, as a background discussion. -Yong}
+
+In this work, we propose CircusTent, an open source, modular, and natively extensible benchmark suite for atomic operations.
+Designed to replicate common atomic memory access patterns in both shared and distributed memory environments, CircusTent provides system architects insight into the performance and scalability of a target architecture's memory hierarchy.
+As such, we believe CircusTent will serve as an invaluable tool for the design and prototyping of future systems.
+
+The remainder of this work is organized as follows.
+Section \ref{sec:previous_work} discusses relevant previous works pertaining to synchronization, atomic memory operations, and memory subsystem performance.
+Section \ref{sec:circustent} details the design of the CircusTent benchmark suite and its constituent kernels.
+Section \ref{sec:benchmark_evaluation} presents a CircusTent-based evaluation of a variety of different architectures using the OpenMP programming model.
+Section \ref{sec:conclusions} reports our final analysis and conclusions.
+Finally, Section \ref{sec:future_work} provides a brief overview of planned future work.
+
 \section{Previous Work}
+
+\todo[inline]{I'd suggest to classify related work into a few categories and
+have a sub-section for each category to make the organization and presentation
+better structured. -Yong}
+
+Several previous studies have examined the behavior and performance characteristics of different synchronization primitives.
+Villa et al. explored the efficiency and scalabilty of barrier based synchronization on manycore architectures utilizing intraprocessor interconnects modeled after the design of network-on-chip (NOC) paradigms \cite{villa2008barriers}.
+In this study, the authors evaluated four different barrier algorithms, implemented in both hardware and software, using a cycle-accurate simulator.
+Trials conducted using up to 128 cores, arranged in five different topologies, revealed that, at least for similar configurations, hardware based barrier implementations exhibit better performance for intraprocessor synchronization.
+
+In a similar study, David et al. conducted an extensive investigation of synchronization that spanned multiple hardware and software methodologies \cite{david2013sync}.
+Based on the results of their evaluation, the authors of this work made several important observations.
+First, they note that, regardless of the implementation, synchronization across sockets is far more expensive than intrasocket synchronization.
+In fact, even in the absence of contention, the authors found that the latency of operations performed on cache lines across sockets increased 2-7.5x as compared to their intrasocket analogs.
+Second, they observe that the organization and behavior of the of the last-level cache (LLC) plays an important role in synchronization scalability within a socket.
+Finally, they perceive that, as the number of threads contending for access to shared data grows, message-passing mechanisms often outperform locking schemes.
+Overall, for physically shared memory systems such as those utilized in this work, the authors conclude that the scalability of synchronization is directly correlated to the system's architecture.
+
+In \cite{schweizer2015evaluating}, Schweizer et al. develop a methodology for analyzing the latency and bandwidth of atomic operations.
+In particular, they study the effects of different cache coherency states and complex memory hierarchies on these operations.
+Using their proposed methodology, they then evaluate three different RMW atomic operations on a number of x86 platforms.
+As part of this evaluation, they show that, contrary to popular belief, all of the tested atomic operations exhibit comparable performance in terms of latency and bandwidth.
+Further, they find that, even in the absence of dependencies between instructions, the design of atomic operations on the tested platforms inherently prevents instruction-level parallelism.
+
+Hoseini et al. also study the properties of atomic operations in physically shared memory systems \cite{hoseini2019modeling}.
+For their investigation, they monitor accesses to shared cache lines in conditions that simulate both high and low levels of contention.
+Notably, for the high contention environment, wherein requests to a single cache line become serialized, they examine the scheduling of thread accesses.
+For one platform utilizing a Xeon-E5 processor, they were unable to discern any deterministic scheduling pattern.
+However, for the other platform featuring a Knights Landing Xeon Phi processor, they observe that threads pinned to cores coresident on the same tile were always scheduled sequentially.
+This is logical as this processor employs L2 caches that are shared between cores on the same tile, but does not include an LLC shared between all cores.
+
+The Spatter Benchmark, developed by Lavin et al., is also directly relevant to this work \cite{lavin2018spatter}.
+Although Spatter does not analyze the performance of synchronization primitives or atomic operations, similar to CircusTent, it is designed to benchmark the memory hierarchies of target architectures.
+More specifically, Spatter measures an architecture's memory performance with respect to an emerging class of indexed memory access patterns known as scatter and gather operations.
+Highly tunable, Spatter provides an efficient means of measuring these irregular, non-uniform memory access patterns increasingly common to HPC applications in a manner previous existing benchmarks could not.
+Currently, Spatter supports both OpenMP and CUDA backend implementations for both CPU and GPGPU based platforms.
+As detailed in Section \ref{subsec:algorithms}, CircusTent also integrates kernels that replicate these memory access patterns using atomic operations. 
+
+In contrast to previous works, CircusTent, as introduced in the following section, ...
+
+\todo[inline]{Possibly add transactional memory papers depending on space}
+
+\todo[inline]{I'd suggest to add TM discussion please, as reviewers would expect this
+discussion and a comparison when we discuss AMOs. -Yong}
 
 \section{CircusTent}
 
@@ -395,27 +507,52 @@ to the \textit{AMOs Per Iteration} column in Table~\ref{tab:amodistro}.
 \begin{table*}
 \caption{Benchmark System Configurations}
 \label{tab:benchsys}
-\begin{tabular}{cccccccc}
+\begin{tabular}{ccccccccc}
 \toprule
-System&Clock&Threads/Socket&Sockets&Cache/Socket&MemSize&OS&Compiler\\
+System&Clock&Cores/Socket&Sockets&LLC Size/Socket&Total Memory&Array Size&OS&Compiler\\
 \midrule
-Xeon-X5650&2.67Ghz&6&2&12MiB&64GiB&Ubuntu 18.04 4.15.0-88 & GCC 7.5.0\\
-Xeon-X5620&2.4Ghz&6&2&12MiB&48GiB&Ubuntu 16.04 4.4.0-87 & GCC 5.4.0\\
-Core i5-3210M&2.5Ghz&4&1&3MiB&4GiB&macOS 10.13.6&clang 9.1.0\\
-Opteron 4130&800Mhz&4&2&512MiB&64GiB&Centos7 3.10.0-957.12.1&GCC 8.3.1\\
-Cortex-A72&1.5Ghz&4&1&1MiB&4GiB&NNN&NNN\\
-Cortex-A53&1.4Ghz&4&1&64KiB&512MiB&NNN&NNN\\
-Xeon-E5-2620&2.6Ghz&12&1&16MiB&64GiB&Ubuntu 16.04 4.4.0-164&GCC 5.4.0\\
-Xeon-E5-2670&2.5Ghz&10&2&24MiB&NNN&Centos7 3.10.0&GCC 7.3.0\\
-Xeon-E5-2695&2.10Ghz&36&2&48MiB&192GiB&Centos7 NNN&NNN\\
-i7-3930K&3.20Ghz&12&1&12MiB&64GiB&Linux Mint 18.3 NNN&NNN\\
-i7-4980HQ&2.80Ghz&8&1&16MiB&16GiB&macOS 10.15.3&GCC 9.2.0\\
-Ryzen V1605B&1.4Ghz&8&1&512KiB&32GiB&Ubuntu 19.04 5.2.10&GCC 8.3.0\\
-Xeon Phi 7250&1.40Ghz&272&1&1MiB&16GiB&SLES 4.12.14&GCC 8.3.0\\
-Xeon E5-2698&2.30Ghz&32&2&40MiB&128GiB&SLES 4.12.14&GCC 8.3.0\\
+Cortex-A53&1.40Ghz&4&1&64KiB&512MiB&NNN&NNN&NNN\\
+Cortex-A72&1.50Ghz&4&1&1MiB&4GiB&NNN&NNN&NNN\\
+Ryzen V1605B&1.5Ghz&4&1&NNN&32GiB&NNN&Ubuntu 19.04 5.2.10&GCC 8.3.0\\
+Opteron 4130&2.60Ghz&4&2&6MiB&64GiB&NNN&Centos7 3.10.0-957.12.1&GCC 8.3.1\\
+Core i5-3210M&2.50Ghz&2&1&3MiB&4GiB&NNN&macOS 10.13.6&clang 9.1.0\\
+Core i7-3930K&3.20Ghz&6&1&12MiB&64GiB&NNN&Linux Mint 18.3 4.15.0-46&GCC 5.4.0\\
+Core i7-4980HQ&2.80Ghz&4&1&6MiB L3 + 128MiB L4&16GiB&NNN&macOS 10.15.3&GCC 9.2.0\\
+Xeon Phi 7250&1.40Ghz&68&1&16GiB MCDRAM&96GiB&NNN&SLES 4.12.14&GCC 8.3.0\\
+Xeon E5620&2.40Ghz&4&2&12MiB&48GiB&NNN&Ubuntu 16.04 4.4.0-87&GCC 5.4.0\\
+Xeon X5650&2.67Ghz&6&2&12MiB&64GiB&NNN&Ubuntu 18.04 4.15.0-88&GCC 7.5.0\\
+Xeon E5-2620 v3&2.40Ghz&6&1&15MiB&64GiB&NNN&Ubuntu 16.04 4.4.0-164&GCC 5.4.0\\
+Xeon E5-2670 v2&2.50Ghz&10&2&25MiB&64GiB&NNN&Centos7 3.10.0&GCC 7.3.0\\
+Xeon E5-2695 v4&2.10Ghz&18&2&45MiB&192GiB&NNN&Centos7 3.10.0&GCC 7.3.0\\
+Xeon E5-2698 v3&2.30Ghz&16&2&40MiB&128GiB&NNN&SLES 4.12.14&GCC 8.3.0\\
 \bottomrule
 \end{tabular}
 \end{table*}
+
+%\begin{table*}
+%\caption{Benchmark System Configurations}
+%\label{tab:benchsys}
+%\begin{tabular}{cccccccc}
+%\toprule
+%System&Clock&Threads/Socket&Sockets&Cache/Socket&MemSize&OS&Compiler\\
+%\midrule
+%Xeon-X5650&2.67Ghz&6&2&12MiB&64GiB&Ubuntu 18.04 4.15.0-88 & GCC 7.5.0\\
+%Xeon-X5620&2.4Ghz&6&2&12MiB&48GiB&Ubuntu 16.04 4.4.0-87 & GCC 5.4.0\\
+%Core i5-3210M&2.5Ghz&4&1&3MiB&4GiB&macOS 10.13.6&clang 9.1.0\\
+%Opteron 4130&800Mhz&4&2&512MiB&64GiB&Centos7 3.10.0-957.12.1&GCC 8.3.1\\
+%Cortex-A72&1.5Ghz&4&1&1MiB&4GiB&NNN&NNN\\
+%Cortex-A53&1.4Ghz&4&1&64KiB&512MiB&NNN&NNN\\
+%Xeon-E5-2620&2.6Ghz&12&1&16MiB&64GiB&Ubuntu 16.04 4.4.0-164&GCC 5.4.0\\
+%Xeon-E5-2670&2.5Ghz&10&2&24MiB&NNN&Centos7 3.10.0&GCC 7.3.0\\
+%Xeon-E5-2695&2.10Ghz&36&2&48MiB&192GiB&Centos7 NNN&NNN\\
+%i7-3930K&3.20Ghz&12&1&12MiB&64GiB&Linux Mint 18.3 NNN&NNN\\
+%i7-4980HQ&2.80Ghz&8&1&16MiB&16GiB&macOS 10.15.3&GCC 9.2.0\\
+%Ryzen V1605B&1.4Ghz&8&1&512KiB&32GiB&Ubuntu 19.04 5.2.10&GCC 8.3.0\\
+%Xeon Phi 7250&1.40Ghz&272&1&1MiB&16GiB&SLES 4.12.14&GCC 8.3.0\\
+%Xeon E5-2698&2.30Ghz&32&2&40MiB&128GiB&SLES 4.12.14&GCC 8.3.0\\
+%\bottomrule
+%\end{tabular}
+%\end{table*}
 
 \subsection{Results}
 
