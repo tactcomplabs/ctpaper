@@ -123,21 +123,9 @@ AMO(ARRAY[dest], val) // ARRAY[dest] = val
 \label{alg:8}
 \end{algorithm}
 
-\subsection{Normalizing the Results}
-\label{subsec:normalizingtheresults}
-
-Given the native extensibility of CircusTent to support a multitude of programming models and platforms, we seek to develop a normalized metric such that we can compare results across platforms and differing degrees of execution parallelism.
-For this, we introduce the \textit{GAMs} metric.  
-
-The \textit{GAMs}, or \textit{billions of atomic operations per second}, metric encapsulates the number of parallel execution elements (\textit{PEs}), the atomic operation algorithmic complexity, and the wall clock execution time in a single metric.
-As we see in Equation~\ref{eq:gams}, the metric is a ratio of the total number of atomic operations executed for all parallel parallel execution elements (in billions) across all iterations and the wall clock execution time.
-The atomic operation algorithmic complexity is the total number of atomic operations required for a single \textit{PE} to execute a single iteration of the target CircusTent kernel.
-This is equivalent to the \textit{AMOs Per Iteration} column in Table~\ref{tab:amodistro}.  
-
-\begin{equation}
-\label{eq:gams}
-  GAMs = \frac{(PEs \times Iters \times AMOs\_Per\_Iter)/1e^{9}}{time}
-\end{equation}
+We summarize the number of atomic operations required to perform each kernel in Table~\ref{tab:amodistro}.
+However, this may vary depending upon how each platform implements a respective atomic operation.
+The CircusTent implementation infrastructure supports the ability to override these defaults for each platform/programming model.    
 
 \begin{table}
   \caption{Atomic Operation Distribution}
@@ -157,3 +145,19 @@ This is equivalent to the \textit{AMOs Per Iteration} column in Table~\ref{tab:a
   \bottomrule
 \end{tabular}
 \end{table}
+
+\subsection{Normalizing the Results}
+\label{subsec:normalizingtheresults}
+
+Given the native extensibility of CircusTent to support a multitude of programming models and platforms, we seek to develop a normalized metric such that we can compare results across platforms and differing degrees of execution parallelism.
+For this, we introduce the \textit{GAMs} metric.  
+
+The \textit{GAMs}, or \textit{billions of atomic operations per second}, metric encapsulates the number of parallel execution elements (\textit{PEs}), the atomic operation algorithmic complexity, and the wall clock execution time in a single metric.
+As we see in Equation~\ref{eq:gams}, the metric is a ratio of the total number of atomic operations executed for all parallel parallel execution elements (in billions) across all iterations and the wall clock execution time.
+The atomic operation algorithmic complexity is the total number of atomic operations required for a single \textit{PE} to execute a single iteration of the target CircusTent kernel.
+This is equivalent to the \textit{AMOs Per Iteration} column in Table~\ref{tab:amodistro}.  
+
+\begin{equation}
+\label{eq:gams}
+  GAMs = \frac{(PEs \times Iters \times AMOs\_Per\_Iter)/1e^{9}}{time}
+\end{equation}
