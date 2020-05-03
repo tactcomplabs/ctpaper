@@ -23,6 +23,9 @@ Each kernel is described in terms of a generic atomic operation, or \textit{AMO}
 However, each kernel may be implemented using any platform-supported atomic operations.
 In the case of this study, we utilize atomic \textit{Add} and atomic \textit{Compare-and-Swap} (CAS) operations to implement each kernel, respectively.  
 
+\subsubsection{Random Access}
+\label{subsubsec:random_access}
+
 The first kernel is a basic random access kernel (Algorithm~\ref{alg:1}).
 The kernel allocates two array structures.
 The \texttt{VAL} array contains a series of values.
@@ -41,6 +44,9 @@ AMO(VAL[IDX[i]])
 \label{alg:1}
 \end{algorithm}
 
+\subsubsection{Stride-1}
+\label{subsubsec:stride1}
+
 The second kernel encapsulates a simple, stride-1 kernel (Algorithm~\ref{alg:2}).  
 The kernel allocates a single array (\texttt{VAL}) that contains a series of values.  
 For each iteration of the loop, the kernel updates a single value in the array in linear fashion using a single atomic operation.
@@ -55,6 +61,9 @@ AMO(VAL[i])
 \label{alg:2}
 \end{algorithm}
 
+\subsubsection{Stride-N}
+\label{subsubsec:striden}
+
 The third kernel is similar in form to the second kernel.
 In this kernel, we utilize the same \texttt{VAL} array structure as mentioned above, but we permit the user to define the unit stride by which we access the array (Algorithm~\ref{alg:3}).  
 For example, if the user seeks to determine what the raw memory bandwidth is of parallel atomics by forcing every access to induce a cache line miss, the stride-n kernel can accomplish this.
@@ -68,6 +77,9 @@ AMO(VAL[i])
 \caption{Stride-N Kernel}
 \label{alg:3}
 \end{algorithm}
+
+\subsubsection{Pointer Chase}
+\label{subsubsec:ptrchase}
 
 The fourth kernel included in the CircusTent suite is a pointer chasing kernel (Algorithm~\ref{alg:4}).
 Similar to the random access kernel, this kernel makes use of an \texttt{IDX} array.
@@ -84,6 +96,9 @@ start = AMO(IDX[start])
 \caption{Pointer Chase Kernel}
 \label{alg:4}
 \end{algorithm}
+
+\subsubsection{Central}
+\label{subsubsec:central}
 
 The fifth kernel is unique among those included in the CircusTent suite.
 Rather than emulate a particular memory access pattern, the Central kernel is designed to measure performance in a worst case scenario (Algorithm~\ref{alg:5}).
@@ -102,11 +117,15 @@ AMO(VAL[0])
 \label{alg:5}
 \end{algorithm}
 
-The sixth kernel replicates the scatter memory access pattern found in many modern HPC applications.
-Herein, the \texttt{VAL} and \texttt{IDX} arrays are constructed as in the random access kernel.
-In contrast to the previous kernels, this kernel performs multiple atomic operations during each of its iterations (Algorithm~\ref{alg:6}).
-\todo[inline]{Finish scatter description}
-\todo[inline]{Add sentence about scatter applications/use cases}
+\subsubsection{Scatter}
+\label{subsubsec:scatter}
+
+The sixth kernel replicates the scatter memory access pattern found in many modern HPC applications (Algorithm~\ref{alg:6}).
+This pattern is characterized by the combination of sequential loads together with randomly indexed stores.
+As such, this kernel, wherein the \texttt{VAL} and \texttt{IDX} arrays are constructed as in the random access kernel, performs multiple atomic operations during each of its iterations.
+In the first step of a given iteration, the target atomic operation is used to obtain a random destination index, given by \texttt{dest}, from the \texttt{IDX} array.
+Next, a value to be stored, \texttt{val}, is similarly obtained.
+Finally, an atomic operation is executed on the memory location denoted by \texttt{VAL[dest]} using argument \texttt{val}.
 
 \begin{algorithm}
 \SetAlgoLined
@@ -119,22 +138,35 @@ AMO(VAL[dest], val) // VAL[dest] = val
 \label{alg:6}
 \end{algorithm}
 
-Gather kernel...
-\todo[inline]{Add sentence about gather applications/use cases}
+\subsubsection{Gather}
+\label{subsubsec:gather}
+
+The Gather kernel can be considered the inverse of the Scatter kernel detailed above (Algorithm~\ref{alg:7}).
+Whereas the latter utilizes sequential loads in conjunction with random stores, the former combines loads from randomly indexed locations with sequential stores.
+Here, an atomic operation first procures a random index, \texttt{src}, from the \texttt{IDX} array.
+A store value, \texttt{val}, is then set from the memory location corresponding to \texttt{src} using a subsequent atomic operation.
+In the final step, \texttt{val} is used as an argument to the atomic operation that writes to the \texttt{VAL} array in a sequential manner across iterations. 
 
 \begin{algorithm}
 \SetAlgoLined
 \For{$i\gets0$ \KwTo $iters$ \KwBy $1$}{
-dest = AMO(IDX[i+1])\\
-val = AMO(VAL[dest])\\
+src = AMO(IDX[i+1])\\
+val = AMO(VAL[src])\\
 AMO(VAL[i], val) // VAL[i] = val
 }
 \caption{Gather Kernel}
 \label{alg:7}
 \end{algorithm}
 
-SG kernel...
-\todo[inline]{Add sentence about sg applications/use cases}
+\subsubsection{Scatter/Gather}
+\label{subsubsec:sg}
+
+The final kernel included in the CircusTent suite is also the most complex, utilizing a total of four atomic operations (Algorithm~\ref{alg:8}).
+Aptly named, the Scatter/Gather kernel combines the random access components of Algorithms ~\ref{alg:6} \& ~\ref{alg:7}.
+Within each loop iteration of this kernel, the first and second atomic operations set random indices \texttt{src} and \texttt{dest}, corresponding to source and destination memory locations, respectively, using the \texttt{IDX} array.
+The third atomic operation then sets \texttt{val} from the location given in \texttt{src}.
+The final atomic operation is executed on the location denoted by \texttt{dest} using \texttt{val} as an argument.
+\todo[inline]{Add sentence about scatter,gather, sg applications/use cases}
 
 \begin{algorithm}
 \SetAlgoLined
