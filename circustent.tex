@@ -19,7 +19,7 @@ CircusTent
 \label{subsec:algorithms}
 
 The CircusTent infrastructure contains eight individual benchmark kernels.
-Each kernel is described in terms of a generic atomic operation, \textit{AMO}.  
+Each kernel is described in terms of a generic atomic operation, or \textit{AMO}.  
 However, each kernel may be implemented using any platform-supported atomic operations.
 In the case of this study, we utilize atomic \textit{Add} and atomic \textit{Compare-and-Swap} (CAS) operations to implement each kernel, respectively.  
 
@@ -63,13 +63,18 @@ Further, for each parallel PE participating in the kernel execution, the startin
 \begin{algorithm}
 \SetAlgoLined
 \For{$i\gets0$ \KwTo $iters$ \KwBy $stride$}{
-AMO(ARRAY[i])
+AMO(VAL[i])
 }
 \caption{Stride-N Kernel}
 \label{alg:3}
 \end{algorithm}
 
-The fourth
+The fourth kernel included in the CircusTent suite is a pointer chasing kernel (Algorithm~\ref{alg:4}).
+Similar to the random access kernel, this kernel makes use of an \texttt{IDX} array.
+In this case, however, each preassigned random index within the array corresponds to another element of \texttt{IDX}.
+Each PE begins the kernel loop by performing an atomic operation to an array location, \texttt{start}, determined using the PE's rank identifier.
+For each subsequent iteration, the executed atomic operation is directly dependent on the index determined in the previous repetition.
+This kernel therefore replicates the irregular memory access patterns common to many applications that utilize linked data structures such as graphs.
 
 \begin{algorithm}
 \SetAlgoLined
@@ -80,44 +85,64 @@ start = AMO(IDX[start])
 \label{alg:4}
 \end{algorithm}
 
+The fifth kernel is unique among those included in the CircusTent suite.
+Rather than emulate a particular memory access pattern, the Central kernel is designed to measure performance in a worst case scenario (Algorithm~\ref{alg:5}).
+Within each iteration of this kernel, every active PE performs an atomic operation to the same shared memory location, given by \texttt{VAL[0]}.
+As a result, these accesses become serialized and performance quickly plateaus as the level of contention rises.
+Depending on the underlying architecture, this behavior can also severely tax the cache hierarchy and associated interconnects.
+For distributed shared memory systems, it also stresses the network interconnect.
+Given the above, this kernel can be used to estimate minimum performance for applications that feature frequent memory hot spots.
+
 \begin{algorithm}
 \SetAlgoLined
 \For{$i\gets0$ \KwTo $iters$ \KwBy $1$}{
-AMO(ARRAY[0])
+AMO(VAL[0])
 }
 \caption{Central Kernel}
 \label{alg:5}
 \end{algorithm}
 
-\begin{algorithm}
-\SetAlgoLined
-\For{$i\gets0$ \KwTo $iters$ \KwBy $1$}{
-dest = AMO(IDX[i+1])\\
-val = AMO(ARRAY[i])\\
-AMO(ARRAY[dest], val) // ARRAY[dest] = val
-}
-\caption{Scatter Kernel}
-\label{alg:6}
-\end{algorithm}
+The sixth kernel replicates the scatter memory access pattern found in many modern HPC applications.
+Herein, the \texttt{VAL} and \texttt{IDX} arrays are constructed as in the random access kernel.
+In contrast to the previous kernels, this kernel performs multiple atomic operations during each of its iterations (Algorithm~\ref{alg:6}).
+\todo[inline]{Finish scatter description}
+\todo[inline]{Add sentence about scatter applications/use cases}
 
 \begin{algorithm}
 \SetAlgoLined
 \For{$i\gets0$ \KwTo $iters$ \KwBy $1$}{
 dest = AMO(IDX[i+1])\\
-val = AMO(ARRAY[dest])\\
-AMO(ARRAY[i], val) // ARRAY[i] = val
+val = AMO(VAL[i])\\
+AMO(VAL[dest], val) // VAL[dest] = val
+}
+\caption{Scatter Kernel}
+\label{alg:6}
+\end{algorithm}
+
+Gather kernel...
+\todo[inline]{Add sentence about gather applications/use cases}
+
+\begin{algorithm}
+\SetAlgoLined
+\For{$i\gets0$ \KwTo $iters$ \KwBy $1$}{
+dest = AMO(IDX[i+1])\\
+val = AMO(VAL[dest])\\
+AMO(VAL[i], val) // VAL[i] = val
 }
 \caption{Gather Kernel}
 \label{alg:7}
 \end{algorithm}
+
+SG kernel...
+\todo[inline]{Add sentence about sg applications/use cases}
 
 \begin{algorithm}
 \SetAlgoLined
 \For{$i\gets0$ \KwTo $iters$ \KwBy $1$}{
 src = AMO(IDX[i])\\
 dest = AMO(IDX[i+1])\\
-val = AMO(ARRAY[src])\\
-AMO(ARRAY[dest], val) // ARRAY[dest] = val
+val = AMO(VAL[src])\\
+AMO(VAL[dest], val) // VAL[dest] = val
 }
 \caption{Scatter/Gather Kernel}
 \label{alg:8}
