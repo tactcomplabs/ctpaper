@@ -1,3 +1,10 @@
 % Future Work Section
 
-Future Work
+While the current CircusTent infrastructure supports a number of modern programming models, 
+we would like to expand the set of supported programming models and platforms to include 
+heterogeneous platforms such as GPUs and FPGAs.  This will require additional effort to include 
+OpenMP \textit{target}, a native OpenACC implementation or supporting a modern heterogeneous compilation and runtime approach such as SYCL~\cite{10.1145/3204919.3204930}.  
+
+In addition to the aforementioned heterogeneous system infrastructure, we also seek to expand our benchmark testing to include distributed memory platforms and programming models.  Given the current support for MPI and OpenSHMEM, it would be advantageous to execute CircusTent on a variety of interconnects (Infiniband, Cray Aries, Ethernet) at scale in order to derive the performance parameters of atomic memory operations for large-scale system deployments.   
+
+Finally, as parallel programming models continue to evolve and adapt to new system architectures, we will continually update the current backend CircusTent implementations to exploit the latest in programming model optimizations.  Further, we fully expect to continue developing new programming model backends for CircusTent in order to evaluate additional models for future scalable systems.  

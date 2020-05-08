@@ -1,19 +1,52 @@
 % CircusTent Section
 
-CircusTent
-
-\begin{figure*}[!t]
-\centering
-\includegraphics[width=5in]{figures/arch.pdf}
-\caption{CircusTent Architecture}
-\label{fig:ct_arch}
-\end{figure*}
+%\begin{figure*}[!t]
+%\centering
+%\includegraphics[width=5in]{figures/arch.pdf}
+%\caption{CircusTent Architecture}
+%\label{fig:ct_arch}
+%\end{figure*}
 
 \subsection{Benchmark Overview}
 \label{subsec:benchmark_overview}
 
+The CircusTent benchmark infrastructure is designed to provide users and system 
+architects the ability to derive normalized, quantitative performance data for 
+atomic memory operations on parallel systems.  For this, we defined the following 
+driving requirements.  
+
+\subsubsection*{Derivation of Normalized Results}: One of the primary difficulties in designing future scalable systems is the ability to derive and utilize quantifiable data 
+to assist in the process of evaluating architectural trade offs.  While application benchmark data is of paramount importance, it is often difficult to synthesize performance characteristics across applications or application kernels.  As a result, the CircusTent benchmark derives a normalized, quantifiable performance value regardless of the size and implementation of the target system.  
+
+\subsubsection*{Programming Model Support}: 
+\subsubsection*{System-Specific Optimizations}:
+\subsubsection*{Pathological Kernels}:
+
+\subsubsection*{}
+As we see in Figure~\ref{fig:ct_arch}, the CircusTent infrastructure is constructed 
+using a C++ inheritance model whereby operations such as command line parsing 
+and benchmark option handling are common across all supported programming models.  The 
+implementation template is a C++ base class that is utilized to encapsulate each, individual 
+programming model implementation.  Operations such as memory allocation, deallocation and 
+programming model initialization are provided by base level member routines that are overridden by each respective programming model.  In this manner, each programming model
+implementation has the ability to utilize it's respective initialization and allocation routines.
+
+In addition to the aforementioned initialization and allocation routine functions, each 
+programming is also required to implement individual versions of each benchmark algorithm 
+(Section~\ref{subsec:algorithms}).  For each algorithm defined, the implementation 
+can be optimized using the respective programming model constructs in order to induce 
+optimal performance.    
+
 \subsection{Programming Models}
 \label{subsec:programming_models}
+
+\subsubsection{OpenMP}
+
+\subsubsection{MPI}
+
+\subsubsection{OpenSHMEM}
+
+\subsubsection{xBGAS}
 
 \subsection{Algorithms}
 \label{subsec:algorithms}
