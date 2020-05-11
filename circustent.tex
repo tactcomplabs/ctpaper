@@ -15,14 +15,15 @@ architects the ability to derive normalized, quantitative performance data for
 atomic memory operations on parallel systems.  For this, we defined the following 
 driving requirements.  
 
-\subsubsection*{Derivation of Normalized Results}: One of the primary difficulties in designing future scalable systems is the ability to derive and utilize quantifiable data 
+\subsubsection*{Derivation of Normalized Results} One of the primary difficulties in designing future scalable systems is the ability to derive and utilize quantifiable data 
 to assist in the process of evaluating architectural trade offs.  While application benchmark data is of paramount importance, it is often difficult to synthesize performance characteristics across applications or application kernels.  As a result, the CircusTent benchmark derives a normalized, quantifiable performance value regardless of the size and implementation of the target system.  
 
-\subsubsection*{Programming Model Support}: 
-\subsubsection*{System-Specific Optimizations}:
-\subsubsection*{Pathological Kernels}:
+\subsubsection*{Programming Model Support} One of the unique characteristics of the CircusTent infrastructure is its ability to support a multitude of programming models for shared memory, distributed and heterogeneous system architectures.  Unlike previous memory benchmarks that were implemented in a single programming model, CircusTent seeks to exploit the intersection of the system architecture and programming model.  Disparate programming models present atomic memory operations using a variety of methods that include compiler intrinsics, programming model directives and explicit function calls.  CircusTent permits architects to utilize the benchmark with the application programming model most relevant to their constituent users. 
 
-\subsubsection*{}
+\subsubsection*{System-Specific Optimizations} In addition to supporting a myriad of programming model backends, the CircusTent infrastructure also has the ability to support system-specific optimizations.  As each programming model implementation is supported via a base implementation template, users have the ability to prescriptively utilize system-specific optimizations such as inline assembly language or compiler intrinsics to induce system-specific behavior.
+
+\subsubsection*{Pathological Kernels}:  Finally, in order to mimic a wide array of application memory access patterns, CircusTent is designed to support eight pathological kernels that mimic different memory access patterns.  The patterns may mimic unit stride, non unit stride, irregular or entirely random access to memory locations using a variety of loop constructs.  Further, each pathological kernel can be implemented using various different styles of atomic memory operations.  We currently implement CircusTent backends using \textit{atomic add} and \textit{compare and swap}.    
+
 As we see in Figure~\ref{fig:ct_arch}, the CircusTent infrastructure is constructed 
 using a C++ inheritance model whereby operations such as command line parsing 
 and benchmark option handling are common across all supported programming models.  The 
@@ -40,13 +41,93 @@ optimal performance.
 \subsection{Programming Models}
 \label{subsec:programming_models}
 
+The current set of programming models supported by CircusTent includes 
+OpenMP, MPI, OpenSHMEM and xBGAS~\cite{leidel2018xbgas}.  As mentioned above, 
+each respective implementation contains a unique set of initialization,
+memory allocation and execution functions.  The initialization functions perform 
+any necessary device discovery, library initialization and rudimentary setup 
+required for each programming model.  The initialization time is not 
+included in the algorithmic runtime reported by the top-level driver functions.  
+The memory allocation routines are utilized by each programming model 
+to allocate and initialize two data structures.  The \texttt{ARRAY} data 
+structure is a linear array that that may span multiple nodes that contains target 
+data.  The \textit{IDX} data structure is also a linear array 
+that may span multiples nodes that contains indices within the 
+scope of the \texttt{ARRAY} 
+data structure.  Currently, all the backend implementations utilize 
+unsigned 64 bit integers (\texttt{uint64\_t}) for each data and index value.  
+Finally, each of the respective implementations contains an 
+optimized implementation for each kernel using each of target atomic memory 
+operation types (\textit{atomic add} and \textit{compare and swap}).
+
 \subsubsection{OpenMP}
+\label{subsubsec:openmp}
+
+The first programming utilized to implement a CircusTent backend is OpenMP.  
+The OpenMP backend is rather simple and does not include a large number 
+of CPU or memory-specific optimizations.  The OpenMP backend utilizes
+standard \texttt{malloc} routines for the \texttt{ARRAY} and \texttt{IDX} 
+memory management.  We do not utilize explicit NUMA optimizations as we 
+sought to make the OpenMP backend as portable as possible.  For each of 
+the target kernels, we utilize the OpenMP \texttt{for} loop construct 
+to parallelize the algorithms across multiple PEs.  We utilize the 
+default scheduling paradigm as degined by the OpenMP runtime utilized at 
+compile time.  For each atomic operation, we utilize the GNU atomic builtins 
+with the \texttt{\_\_ATOMIC\_RELAXED} memory order such that architectures 
+with weak memory ordering may have multiple requests in flight.  
 
 \subsubsection{MPI}
+\label{subsubsec:mpi}
+
+The second programming utilized to implement a CircusTent backed is MPI.  
+Specifically, we utilize the MPI-3
+specification~\cite{mpi-3.0}~\cite{10.1007/978-3-642-33518-1_1} to 
+implement a distributed 
+memory backend.  The MPI backend is constructed using MPI-3 \textit{window} 
+constructs for dynamic, one-sided RMA operations.  Each of the \texttt{ARRAY} 
+and \texttt{IDX} constructs are locally allocated and mapped into a dynamic 
+window.  Within the kernel implementations for each algorithm, we utilize 
+one sided operations to fetch normal index values 
+(\texttt{MPI\_Get} and \texttt{MPI\_Put}) as well as MPI-3 atomic 
+operation function calls for the actual atomics.  This includes 
+using \texttt{MPI\_Compare\_and\_swap} and \texttt{MPI\_Fetch\_and\_op}.  
+Depending upon the MPI library utilized at compile time, each of 
+the aforementioned MPI atomic operations may be implemented 
+utilizing combinations of OS system calls, micro architectural atomic 
+operations and remote direct memory access (RDMA) operations on the interconnect.  
 
 \subsubsection{OpenSHMEM}
+\label{subsubsec:openshmem}
+
+The next programming model utilized to implement a CircusTent backend is 
+OpenSHMEM~\cite{openshmemspec}~\cite{Poole2011}.  OpenSHMEM provides a runtime 
+infrastructure and set of common function interfaces to provide distributed 
+memory systems a shared memory view via a symmetric heap managed by the runtime.  
+Similar to other parallel programming models such as MPI, OpenSHMEM provides 
+native interfaces for atomics, one-sided communication as well as native 
+memory allocation routines.  For CircusTent, we utilize the standard set 
+of OpenSHMEM memory management routines (\texttt{shmem\_malloc}) in order to
+allocate the \texttt{ARRAY} and \texttt{IDX} constructs in the symmetric heap.  
+Similar to the MPI-3 implementation, we utilize native OpenSHMEM one-sided 
+operation to fetch normal index values (\texttt{shmem\_long\_get} 
+and \texttt{shmem\_long\_put}).  We utilize the native OpenSHMEM 
+atomic function interfaces, \texttt{shmem\_long\_fadd} and 
+\texttt{shmem\_long\_cswap}, for atomic add and compare-and-swap, 
+respectively.  
 
 \subsubsection{xBGAS}
+\label{subsubsec:xbgas}
+The final programming model currently utilized to implement a CircusTent is 
+the xBGAS runtime infrastructure~\cite{leidel2018xbgas}~\cite{xbgasspec}.  xBGAS 
+is a project to construct a micro architectural extension to the RISC-V 
+instruction set in order to provide instruction-level shared memory access 
+across distributed memory systems.  The xBGAS runtime infrastructure mimics 
+the form and function of the OpenSHMEM infrastructure.  It provides rudimentary 
+memory management routines for hardware-accelerated symmetric heap allocation 
+(\texttt{xbrtime\_malloc})as 
+as function wrappers for xBGAS-accelerated global shared memory access 
+instructions (\texttt{xbrtime\_ long\_atomic\_add} 
+and \texttt{xbrtime\_long\_atomic\_compare\_swap}).  
 
 \subsection{Algorithms}
 \label{subsec:algorithms}
@@ -62,11 +143,16 @@ In the case of this study, we utilize atomic \textit{Add} and atomic \textit{Com
 The first kernel is a basic random access kernel (Algorithm~\ref{alg:1}).
 The kernel allocates two array structures.
 The \texttt{VAL} array contains a series of values.
-The \texttt{IDX} array contains a series of valid indices within the scope of the \texttt{VAL} array.
-Prior to the execution of the kernel, the indices are randomly selected and written to the \texttt{IDX} array using a linear congruential randomizer.
-For each iteration of the loop, a single \texttt{VAL} array entry is updated using an atomic operation.
-In this manner, the random access kernel contains one memory load (\texttt{IDX[i]}) and one atomic operation for each iteration of the loop.
-The goal of this kernel is to observe the performance of atomic operations when the platform has a limited ability to cache data for subsequent iterations.  
+The \texttt{IDX} array contains a series of valid indices within the scope of 
+the \texttt{VAL} array.
+Prior to the execution of the kernel, the indices are randomly selected and 
+written to the \texttt{IDX} array using a linear congruential randomizer.
+For each iteration of the loop, a single \texttt{VAL} array entry is updated 
+using an atomic operation.
+In this manner, the random access kernel contains one memory load 
+(\texttt{IDX[i]}) and one atomic operation for each iteration of the loop.
+The goal of this kernel is to observe the performance of atomic operations 
+when the platform has a limited ability to cache data for subsequent iterations.  
 
 \begin{algorithm}
 \SetAlgoLined
