@@ -1,7 +1,7 @@
 % Introduction Section
 
-The impending demise of Moore's Law (and dennard scaling) has produced a renaissance in the field of computer architecture.
-Unable to continue leveraging increasing processor frequencies to further improve performance and scalability, system architects have been forced to explore other options.
+The impending demise of both Moore's Law and Dennard Scaling has produced a renaissance in the field of computer architecture.
+Unable to continue leveraging silicon-level processor improvements to further enhance performance and scalability, system architects have been forced to explore other options.
 In this new era of heterogeneous architectures and hardware/software codesign, parallel processing and associated programming paradigms have become of paramount importance.
 Alongside an increased prominence in traditional high performance computing (HPC) environments in academia, government laboratories, and industry, parallel processing has also become imperative for consumer-level devices.
 As such, a better understanding of the behavior of parallel applications, and their interaction with the architectures they run on, is highly desirable in order to ensure optimal performance.
@@ -37,8 +37,8 @@ Therefore, these remote atomic operations are typically built upon some combinat
 Utilizing a node's network interface card (NIC) to perform the local atomic operations can further optimize system performance in these models \cite{rae}.
 The prevalence of distributed memory environments in high performance computing, in conjunction with inherent limits to mulitcore scaling \cite{esmaeilzadeh2011silicon}, illustrate the need to understand the behavior of these remote atomic operations when designing future systems.
 
-\todo[inline]{The intro section is a bit long as of now; the above paragraph 
-can be considered to move to Sec. 2, as a background discussion. -Yong}
+%\todo[inline]{The intro section is a bit long as of now; the above paragraph can be considered to move to Sec. 2, as a background discussion. -Yong}
+% Given the increased length of the previous work section, leaving for now so that the introduction isn't dwarfed by PW. Could still be moved if needed. -Brody
 
 In this work, we propose CircusTent, an open source, modular, and natively extensible benchmark suite for atomic operations.
 Designed to replicate common atomic memory access patterns in both shared and distributed memory environments, CircusTent provides system architects insight into the performance and scalability of a target architecture's memory hierarchy.
@@ -47,8 +47,6 @@ As such, we believe CircusTent will serve as an invaluable tool for the design a
 The remainder of this work is organized as follows.
 Section \ref{sec:previous_work} discusses relevant previous works pertaining to synchronization, atomic memory operations, and memory subsystem performance.
 Section \ref{sec:circustent} details the design of the CircusTent benchmark suite and its constituent kernels.
-Section \ref{sec:benchmark_evaluation} presents a CircusTent-based evaluation of a variety of different architectures using the OpenMP programming model.
+Section \ref{sec:benchmark_evaluation} presents an evaluation of the CircusTent benchmark suite conducted using a variety of different architectures and the OpenMP programming model.
 Section \ref{sec:conclusions} reports our final analysis and conclusions.
 Finally, Section \ref{sec:future_work} provides a brief overview of planned future work.
-
-\todo[inline]{Reword first few sentences of intro}

@@ -1,3 +1,22 @@
 % Conclusions Section
 
-Conclusions
+The performance of atomic operations plays a critical role in the scalability of existing systems.
+As the degree of heterogeneity and complexity of memory subsystems in future systems increases, this trend can only be expected to continue or worsen/exacerbate.
+However, to the best of our knowledge, a comprehensive methodology for measuring the performance of memory subsystems with respect to atomic operations has yet to emerge.
+
+In this work, we introduced the open source CircusTent benchmark suite to fill this void.
+CircusTent measures the performance of disparate platforms and architectures directly through common parallel programming paradigms.
+Herein, we showcased the modular design of CircusTent that enables native extensibilty for future refinements and programming models.
+We explored our currently implemented backend implementations, designed for both physically shared and distributed shared memory systems, built upon the OpenMP, MPI, and OpenSHMEM programming models as well the xBGAS microarchitectural extension.
+We also detailed the eight kernels, designed to replicate atomic memory access patterns common in HPC/scientific applications, that constitute CircusTent benchmark.
+
+Finally, we performed an extensive evaluation of CircusTent using 14 varied test platforms.
+Through the use of our normalized GAMs benchmark, we are able to directly compare the performance of these disparate systems.
+We found ...  in line with previous and expected behaviors.
+Also revealed some new insights ...
+
+We believe CircusTent ... (needed functionality) 
+Useful for system architects for the design and prototype of future systems
+
+\todo[inline]{Finish/Cleanup Conclusion}
+\todo[inline]{Add several sentences based on contents of evaluation results}
