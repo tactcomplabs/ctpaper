@@ -246,11 +246,11 @@ AMO(VAL[i], val) // VAL[i] = val
 \label{subsubsec:sg}
 
 The final kernel included in the CircusTent suite is also the most complex, utilizing a total of four atomic operations (Algorithm~\ref{alg:8}).
-Aptly named, the Scatter/Gather kernel combines the random access components of Algorithms ~\ref{alg:6} \& ~\ref{alg:7}.
+Aptly named, the Scatter/Gather kernel combines the random access components of Algorithms ~\ref{alg:6}~\&~\ref{alg:7}.
 Within each loop iteration of this kernel, the first and second atomic operations set random indices \texttt{src} and \texttt{dest}, corresponding to source and destination memory locations, respectively, using the \texttt{IDX} array.
 The third atomic operation then sets \texttt{val} from the location given in \texttt{src}.
 The final atomic operation is executed on the location denoted by \texttt{dest} using \texttt{val} as an argument.
-The memory access patterns exhibited by kernels ~\ref{alg:6}, ~\ref{alg:7}, and \ref{alg:8} imitate those commonly found in applications that perform computation using sparse matrices.
+The memory access patterns exhibited by kernels~\ref{alg:6},~\ref{alg:7},~and~\ref{alg:8} imitate those commonly found in applications that perform computation using sparse matrices.
 
 \begin{algorithm}
 \SetAlgoLined

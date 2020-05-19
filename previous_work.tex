@@ -88,7 +88,7 @@ Although Spatter does not analyze the performance of synchronization primitives 
 More specifically, Spatter measures an architecture's memory performance with respect to an emerging class of indexed memory access patterns known as scatter and gather operations.
 Highly tunable, Spatter provides an efficient means of measuring these irregular, non-uniform memory access patterns increasingly common to HPC applications in a manner previous existing benchmarks could not.
 Currently, Spatter supports both OpenMP and CUDA backend implementations for both CPU and GPU-based platforms.
-As detailed in section \ref{subsec:algorithms}, CircusTent also integrates kernels that replicate these memory access patterns, but does so using atomic operations in lieu of traditional loads and stores.
+As detailed in Section~\ref{subsec:algorithms}, CircusTent also integrates kernels that replicate these memory access patterns, but does so using atomic operations in lieu of traditional loads and stores.
 
 %\todo[inline]{Possibly add transactional memory papers depending on space}
 %\todo[inline]{I'd suggest to add TM discussion please, as reviewers would expect this discussion and a comparison when we discuss AMOs. -Yong}

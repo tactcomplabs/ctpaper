@@ -1,23 +1,40 @@
 % Benchmark Evaluation Section
 
-In order to demonstrate the capabilities of the CircusTent benchmark suite, in this section we conduct an evaluation of atomic memory operations on a variety of different test platforms.
-We first introduce our test platforms and briefly describe pertinent details of their underlying architecture in section ~\ref{subsec:platforms}.
-We next detail our evaluation methodology in section ~\ref{subsec:methodology}.
-Finally, we present and discuss the our evaluation results for each of the CircusTent kernels in section ~\ref{subsec:results}.
+In order to verify and demonstrate the capabilities of the CircusTent benchmark suite, in this section we conduct an evaluation of a diverse set of platforms with respect to atomic memory operations.
+We first introduce our test platforms and briefly describe pertinent details of their architecture in Section~\ref{subsec:platforms}.
+We next detail our evaluation methodology in Section~\ref{subsec:methodology}.
+Finally, we present and discuss the results of our evaluation in Section~\ref{subsec:results}.
 
 \subsection{Platforms}
 \label{subsec:platforms}
 
-We evaluate CircusTent across a total of fourteen different platforms.
-The platforms encompass a variety of different device classes/architectures that include embedded, laptop, desktop, server, and petascale class supercomputers.
-Further, the processors utilized encompass a variety of different instruction set architectures from Intel, AMD, and ARM.
-These systems feature both single and dual socket systems whose processors have varied core counts and clock speeds.
-Further, the complexity of these system's memory subsystem and cache hierarchy are similar varied.
+We evaluate CircusTent across a total of fourteen distinct platforms that encompass device classes ranging from embedded systems to those used in petascale-class supercomputers.
+These systems feature single and dual socket configurations utilizing processors from Intel, AMD, and ARM with varied instruction set architectures, clock frequencies, and core counts.
+Similarly, the total memory capacity differs across platforms.
+Table~\ref{tab:benchsys} provides an overview of our test platform specifications wherein each system is denoted by its processor model.
+The size of the \texttt{VAL} array used during our evaluation, as well as the compiler used to build CircusTent, is also shown for each platform.
 
-However, using CircusTent and our normalized GAMs metric, we are able to directly compare the performance of these memory hierarchies with respect to atomic operations in a variety of different scenarios. (using memory access patterns common in...).
-Table ~\ref{tab:benchsys} provides an overview of our test platforms specifications wherein each system is denoted by its processor.
-In addition, we also provide a brief description of each platform in the list below.
-In particular, we detail the implementation of each platform's cache hierarchy as this directly correlates to its shared memory performance. 
+As the organization of each system's cache hierarchy is an important factor to its benchmark performance, some further detail in this regard is warranted.
+Many of the processors featured in our test platforms adhere to a somewhat standard cache hierarchy design.
+Each of these processors feature a three-level hierarchy wherein the L1 and L2 caches are private to each core and the L3 caches are shared between cores in a given socket.
+Each L1 cache is subdivided into L1i and L1d caches for instructions and data, respectively.
+For the sake of brevity, we detail only systems whose cache organization deviates from this norm, and how they do so, below.
+
+\begin{itemize}
+\item Cortex-A53 -
+\newline
+\item Cortex-A72 -
+\newline
+\item Core i7-4980HQ - In addition to a conventional 6 MiB L3 cache shared between cores, this processor also features a 128 MiB L4, or ``Crystal Well", cache that is shared between the CPU cores and the integrated GPU.
+\newline
+\item Xeon Phi 7250 - The 68 cores present in this processor are arranged in 34 tiles of 2 cores each.
+Herein, cores coresident within a tile share a 1MiB L2 cache.
+Although it does not incorporate a true shared last level cache, this processor features 16 GiB of MCDRAM that can be used as addressable memory, a shared cache across all cores, or in a hybrid configuration. 
+For our evaluation, the MCDRAM is utilized in the cache configuration.
+\end{itemize}
+
+\todo[inline]{John - Originally, I was going to list (at least cache) details for every platform here. However, I decided it might not look good to take up so much space and repeat a lot of info. I also elected to leave out the specific cache level sizes, associativity, and inclusivity. We can employ the original approach and/or add these details if preferable. - Brody}
+\todo[inline]{John - I was unsure of the precise Pi models for the cache info, but assumed they might also fit into this non-standard listing and added placeholders for now. - Brody}
 
 \begin{table*}
 \caption{Benchmark System Configurations}
@@ -44,24 +61,27 @@ Xeon E5-2698 v3 & 2.30Ghz & 16 & 2 & 40MiB & 128GiB & 15GiB & SLES\newline 4.12.
 \end{tabular}
 \end{table*}
 
-\todo[inline]{Double check system specs and array sizes with John}
+\todo[inline]{John - I pulled the array sizes from the scripts files and the processor specs from the web. You can double check that everything looks correct if you want. From the OS info you sent on the Ryzen system, the cache size seems to correspond to the L2, so I am assuming the shared L3 is also present underneath. - Brody}
 
 \subsection{Methodology}
 \label{subsec:methodology}
 
-Consistent with previous studies, we focus on evaluating the CircusTent suite in a shared-memory environment in this work\cite{}.
-In order to do so, we execute each of the CircusTent kernels, detailed in section ~\ref{subsec:algorithms}, on the test platforms introduced above using the OpenMP-based CircusTent benchmark implementation. For each kernel, we conduct trials using both the atomic \textit{Add} and \textit{Compare-and-Swap} implementations.
-For both versions, 64-bit operands are used throughout the evaluation to prevent any inconsistencies.
-For the StrideN kernel, a uniform unit stride size of 9 is utilized for each trial.
+Consistent with previous studies \cite{villa2008barriers}\cite{david2013sync}\cite{schweizer2015evaluating}\cite{hoseini2019modeling}, we perform our initial evaluation of the CircusTent suite in the context of a physically shared memory environment.
+In order to do so, we execute each of the CircusTent benchmark kernels, detailed in Section~\ref{subsec:algorithms}, on the test platforms introduced above using our OpenMP backend.
+For each kernel, we conduct trials using implementations based on both the atomic \textit{Add} and \textit{Compare-and-Swap} primitives.
+A uniform stride size of $N=9$ is utilized for each trial of the StrideN kernel.
 
-We collect performance results on each platform.
-In order to eliminate any performance variability associated with simultaneous multithreading (SMT), we vary the thread count from a single thread up to one thread per physical core for each platform.
+We collect performance results for each platform.
+In order to eliminate any performance volatility associated with simultaneous multithreading (SMT), we vary the thread count during our trials from a single thread, up to one thread per physical core, for each platform.
+Similarly, 64-bit operands are used throughout the evaluation to prevent any inconsistencies.
 Moreover, to better simulate real-world behavior, we allow the operating system and programming model to perform the mapping of threads to processor cores.
 
-Where feasible, a uniform size of approximately 15 GiB is utilized for the \texttt{VAL} array on each platform. For the Cortex A-53, Cortex A-72, and Core i5-3210M systems, wherein physical memory limitations make this configuration impractical, a size of 256 MiB is utilized instead.
-In order to generate sufficient runtime such that the benchmark's behavior normalizes, twenty million iterations are run as part of each trial conducted for each kernel.
+Where feasible, a uniform size of approximately 15 GiB is utilized for the \texttt{VAL} array on each platform.
+For the Cortex A-53, Cortex A-72, and Core i5-3210M systems, wherein physical memory limitations make this configuration impractical, a 256 MiB \texttt{VAL} array is utilized instead.
+In order to generate sufficient runtime such that observable patterns of behavior emerge, twenty million iterations of each kernel loop are run during every benchmark trial.
+We utilize our normalized \textit{GAMs} metric, as introduced in Section~\ref{subsec:normalizingtheresults}, throughout our evaluation to measure and compare the performance of our diverse set of test platforms.
 
-\todo[inline]{Add previous shared-memory references}
+\todo[inline]{John - Do you think it is alright to approximate the array size to 15GB? The exact size of 16488974000 bytes (approx. 15.36 GB) just looks a bit odd and seems arbitrary. - Brody}
 
 \subsection{Results}
 \label{subsec:results}
