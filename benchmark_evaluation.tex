@@ -5,6 +5,7 @@ We first introduce our test platforms and briefly describe pertinent details of 
 We next detail our evaluation methodology in Section~\ref{subsec:methodology}.
 Finally, we present and discuss the results of our evaluation in Section~\ref{subsec:results}.
 \todo[inline]{@Brody - If we are short of space, this block of text can likely be omitted}
+\todo[inline]{@John - The listed MEMSYS page limit is up to 16 pages, so we are likely good on space. It could still be removed though if it is extraneous.}
 
 \subsection{Platforms}
 \label{subsec:platforms}
@@ -34,11 +35,11 @@ Although it does not incorporate a true shared last level cache, this processor 
 For our evaluation, the MCDRAM is utilized in the cache configuration.
 \end{itemize}
 
-\todo[inline]{John - Originally, I was going to list (at least cache) details for every platform here. However, I decided it might not look good to take up so much space and repeat a lot of info. I also elected to leave out the specific cache level sizes, associativity, and inclusivity. We can employ the original approach and/or add these details if preferable. - Brody}
-\todo[inline]{@Brody - I agree, lets leave out the underlying cache details for now.  If it becomes relevant in the evaluation section, we can outline 
-the cache details for specific platforms.}
+%\todo[inline]{John - Originally, I was going to list (at least cache) details for every platform here. However, I decided it might not look good to take up so much space and repeat a lot of info. I also elected to leave out the specific cache level sizes, associativity, and inclusivity. We can employ the original approach and/or add these details if preferable. - Brody}
+%\todo[inline]{@Brody - I agree, lets leave out the underlying cache details for now.  If it becomes relevant in the evaluation section, we can outline the cache details for specific platforms.}
 \todo[inline]{John - I was unsure of the precise Pi models for the cache info, but assumed they might also fit into this non-standard listing and added placeholders for now. - Brody}
 \todo[inline]{@Brody - This is fixed in the table}
+\todo[inline]{@John - Does either processor fit the "non-standard" criteria in the preceding paragraph and need to be included in the bulleted list?}
 
 \begin{table*}
 \caption{Benchmark System Configurations}
@@ -65,8 +66,8 @@ Xeon E5-2698 v3 & 2.30Ghz & 16 & 2 & 40MiB & 128GiB & 15GiB & SLES\newline 4.12.
 \end{tabular}
 \end{table*}
 
-\todo[inline]{John - I pulled the array sizes from the scripts files and the processor specs from the web. You can double check that everything looks correct if you want. From the OS info you sent on the Ryzen system, the cache size seems to correspond to the L2, so I am assuming the shared L3 is also present underneath. - Brody}
-\todo[inline]{@Brody - This is fixed}
+%\todo[inline]{John - I pulled the array sizes from the scripts files and the processor specs from the web. You can double check that everything looks correct if you want. From the OS info you sent on the Ryzen system, the cache size seems to correspond to the L2, so I am assuming the shared L3 is also present underneath. - Brody}
+%\todo[inline]{@Brody - This is fixed}
 
 \subsection{Methodology}
 \label{subsec:methodology}
@@ -86,8 +87,8 @@ For the Cortex A-53, Cortex A-72, and Core i5-3210M systems, wherein physical me
 In order to generate sufficient runtime such that observable patterns of behavior emerge, twenty million iterations of each kernel loop are run during every benchmark trial.
 We utilize our normalized \textit{GAMs} metric, as introduced in Section~\ref{subsec:normalizingtheresults}, throughout our evaluation to measure and compare the performance of our diverse set of test platforms.
 
-\todo[inline]{John - Do you think it is alright to approximate the array size to 15GB? The exact size of 16488974000 bytes (approx. 15.36 GB) just looks a bit odd and seems arbitrary. - Brody}
-\todo[inline]{@Brody - Yes, this should be fine.  I difference between 15.36 and 16 GB will not affect these results}
+%\todo[inline]{John - Do you think it is alright to approximate the array size to 15GB? The exact size of 16488974000 bytes (approx. 15.36 GB) just looks a bit odd and seems arbitrary. - Brody}
+%\todo[inline]{@Brody - Yes, this should be fine.  I difference between 15.36 and 16 GB will not affect these results}
 
 \subsection{Results}
 \label{subsec:results}
