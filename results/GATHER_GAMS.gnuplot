@@ -4,7 +4,7 @@ set pointintervalbox 3
 set term png size 1920,1080 enhanced font 'Verdana,24'
 set size .75, 1
 set key at graph 1.45, 1.0
-set key font ",17"
+set key font ",22"
 set title "Gather Benchmark GAMS"
 set output "GATHER_GAMS.png"
 set ylabel "Giga AMOs/sec (GAMS)"
