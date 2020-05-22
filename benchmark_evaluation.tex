@@ -4,8 +4,8 @@ In order to verify and demonstrate the capabilities of the CircusTent benchmark 
 We first introduce our test platforms and briefly describe pertinent details of their architecture in Section~\ref{subsec:platforms}.
 We next detail our evaluation methodology in Section~\ref{subsec:methodology}.
 Finally, we present and discuss the results of our evaluation in Section~\ref{subsec:results}.
-\todo[inline]{@Brody - If we are short of space, this block of text can likely be omitted}
-\todo[inline]{@John - The listed MEMSYS page limit is up to 16 pages, so we are likely good on space. It could still be removed though if it is extraneous.}
+%\todo[inline]{@Brody - If we are short of space, this block of text can likely be omitted}
+%\todo[inline]{@John - The listed MEMSYS page limit is up to 16 pages, so we are likely good on space. It could still be removed though if it is extraneous.}
 
 \subsection{Platforms}
 \label{subsec:platforms}
@@ -23,9 +23,11 @@ Each L1 cache is subdivided into L1i and L1d caches for instructions and data, r
 For the sake of brevity, we detail only systems whose cache organization deviates from this norm, and how they do so, below.
 
 \begin{itemize}
-\item Cortex-A53 -
+\item Cortex-A53 - The Arm Cortex-A53 is hosted on a Raspberry Pi Model 3B+.  This model features four cores, each with a private 32KiB L1 cache and a 512KiB shared L2 cache.  The Cortex-A53 does not have any cache levels beyond L2.  
 \newline
-\item Cortex-A72 -
+\item Cortex-A72 - Similar to the A53, the A72 has two cache levels.  The L1 cache is split between a 32KiB instruction cache and a 48KiB data cache.  The 1MiB L2 cache is shared amongst all the cores with no further caching layers.  
+\newline
+\item Ryzen V1605B - The AMD Ryzen V1605B embedded x86\_64 socket is hosted via an Udoo Bolt platform.  The processor features an L1 cache split between into a 256KiB instruction cache and a 128KiB data cache.  The L1 instruction cache is 4-way set associative and the data cache is 8-way set associative.  The L2 cache is 2MiB using an 8-way set associative configuration.  The L3 cache is also 8-way set associative with 4MiB of capacity.  
 \newline
 \item Core i7-4980HQ - In addition to a conventional 6 MiB L3 cache shared between cores, this processor also features a 128 MiB L4, or ``Crystal Well", cache that is shared between the CPU cores and the integrated GPU.
 \newline
@@ -37,18 +39,19 @@ For our evaluation, the MCDRAM is utilized in the cache configuration.
 
 %\todo[inline]{John - Originally, I was going to list (at least cache) details for every platform here. However, I decided it might not look good to take up so much space and repeat a lot of info. I also elected to leave out the specific cache level sizes, associativity, and inclusivity. We can employ the original approach and/or add these details if preferable. - Brody}
 %\todo[inline]{@Brody - I agree, lets leave out the underlying cache details for now.  If it becomes relevant in the evaluation section, we can outline the cache details for specific platforms.}
-\todo[inline]{John - I was unsure of the precise Pi models for the cache info, but assumed they might also fit into this non-standard listing and added placeholders for now. - Brody}
-\todo[inline]{@Brody - This is fixed in the table}
-\todo[inline]{@John - Does either processor fit the "non-standard" criteria in the preceding paragraph and need to be included in the bulleted list?}
+%\todo[inline]{John - I was unsure of the precise Pi models for the cache info, but assumed they might also fit into this non-standard listing and added placeholders for now. - Brody}
+%\todo[inline]{@Brody - This is fixed in the table}
+%\todo[inline]{@John - Does either processor fit the "non-standard" criteria in the preceding paragraph and need to be included in the bulleted list?}
+%\todo[inline]{@Brody - I would think so.  I'll take a stab at writing these up.  I also might add the Ryzen embedded system}
 
 \begin{table*}
 \caption{Benchmark System Configurations}
 \label{tab:benchsys}
-\begin{tabular}{ccccp{15mm}ccp{16mm}c}
+\begin{tabular}{ccp{10mm}cp{15mm}ccp{16mm}c}
 \toprule
-System&Clock Frequency&Cores / Socket&Total Sockets&LLC Size\newline~/ Socket&Total Memory&Array Size&Operating\newline System&Compiler\\
+System&Clock Frequency&Cores / \newline~Socket&Total Sockets&LLC Size\newline~/ Socket&Total Memory&Array Size&Operating\newline System&Compiler\\
 \midrule
-Cortex-A53      & 1.40Ghz & 4  & 1 & 2MiB  & 512MiB & 256MiB  & Ubuntu\newline 18.04 4.15.0 & GCC 7.4.0\\
+Cortex-A53      & 1.40Ghz & 4  & 1 & 512KiB  & 512MiB & 256MiB  & Ubuntu\newline 18.04 4.15.0 & GCC 7.4.0\\
 Cortex-A72      & 1.50Ghz & 4  & 1 & 1MiB   & 4GiB & 256MiB  & Debian\newline 10.1 4.19.75 & GCC 8.3.0\\
 Ryzen V1605B    & 1.58Ghz & 4  & 1 & 4MiB    & 32GiB & 15GiB & Ubuntu\newline 19.04 5.2.10&GCC 8.3.0\\
 Opteron 4130    & 2.60Ghz & 4  & 2 & 6MiB   & 64GiB & 15GiB & Centos7\newline 3.10.0&GCC 8.3.1\\
