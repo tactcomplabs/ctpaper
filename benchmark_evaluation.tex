@@ -3,9 +3,11 @@
 In order to verify and demonstrate the capabilities of the CircusTent benchmark suite, in this section we conduct an evaluation of a diverse set of platforms with respect to atomic memory operations.
 We first introduce our test platforms and briefly describe pertinent details of their architecture in Section~\ref{subsec:platforms}.
 We next detail our evaluation methodology in Section~\ref{subsec:methodology}.
-Finally, we present and discuss the results of our evaluation in Section~\ref{subsec:results}.
-\todo[inline]{@Brody - If we are short of space, this block of text can likely be omitted}
-\todo[inline]{@John - The listed MEMSYS page limit is up to 16 pages, so we are likely good on space. It could still be removed though if it is extraneous.}
+Results for each of the CircusTent benchmark kernels are presented in Section~\ref{subsec:results}.
+Finally, we analyze and discuss observed patterns and performance characteristics in Section~\ref{subsec:analysis}.
+%Finally, we present and discuss the results of our evaluation in Section~\ref{subsec:results}.
+%\todo[inline]{@Brody - If we are short of space, this block of text can likely be omitted}
+%\todo[inline]{@John - The listed MEMSYS page limit is up to 16 pages, so we are likely good on space. It could still be removed though if it is extraneous.}
 
 \subsection{Platforms}
 \label{subsec:platforms}
@@ -23,9 +25,19 @@ Each L1 cache is subdivided into L1i and L1d caches for instructions and data, r
 For the sake of brevity, we detail only systems whose cache organization deviates from this norm, and how they do so, below.
 
 \begin{itemize}
-\item Cortex-A53 -
+\item Cortex-A53 -  The Arm Cortex-A53 is hosted on a Raspberry Pi Model 3B+.
+This model features four cores, each with a private 32KiB L1 cache and a 512KiB shared L2 cache.
+The Cortex-A53 does not have any cache levels beyond L2.
 \newline
-\item Cortex-A72 -
+\item Cortex-A72 - Similar to the A53, the A72 has two cache levels.
+The L1 cache is split between a 32KiB instruction cache and a 48KiB data cache.
+The 1MiB L2 cache is shared amongst all the cores with no further caching layers.
+\newline
+\item Ryzen V1605B - The AMD Ryzen V1605B embedded x86\_64 socket is hosted via an Udoo Bolt platform.
+The processor features an L1 cache split between into a 256KiB instruction cache and a 128KiB data cache.
+The L1 instruction cache is 4-way set associative and the data cache is 8-way set associative.
+The L2 cache is 2MiB using an 8-way set associative configuration.
+The L3 cache is also 8-way set associative with 4MiB of capacity.  
 \newline
 \item Core i7-4980HQ - In addition to a conventional 6 MiB L3 cache shared between cores, this processor also features a 128 MiB L4, or ``Crystal Well", cache that is shared between the CPU cores and the integrated GPU.
 \newline
@@ -37,18 +49,19 @@ For our evaluation, the MCDRAM is utilized in the cache configuration.
 
 %\todo[inline]{John - Originally, I was going to list (at least cache) details for every platform here. However, I decided it might not look good to take up so much space and repeat a lot of info. I also elected to leave out the specific cache level sizes, associativity, and inclusivity. We can employ the original approach and/or add these details if preferable. - Brody}
 %\todo[inline]{@Brody - I agree, lets leave out the underlying cache details for now.  If it becomes relevant in the evaluation section, we can outline the cache details for specific platforms.}
-\todo[inline]{John - I was unsure of the precise Pi models for the cache info, but assumed they might also fit into this non-standard listing and added placeholders for now. - Brody}
-\todo[inline]{@Brody - This is fixed in the table}
-\todo[inline]{@John - Does either processor fit the "non-standard" criteria in the preceding paragraph and need to be included in the bulleted list?}
+%\todo[inline]{John - I was unsure of the precise Pi models for the cache info, but assumed they might also fit into this non-standard listing and added placeholders for now. - Brody}
+%\todo[inline]{@Brody - This is fixed in the table}
+%\todo[inline]{@John - Does either processor fit the "non-standard" criteria in the preceding paragraph and need to be included in the bulleted list?}
+%\todo[inline]{@Brody - I would think so.  I'll take a stab at writing these up.  I also might add the Ryzen embedded system}
 
 \begin{table*}
 \caption{Benchmark System Configurations}
 \label{tab:benchsys}
-\begin{tabular}{ccccp{15mm}ccp{16mm}c}
+\begin{tabular}{ccp{10mm}cp{15mm}ccp{16mm}c}
 \toprule
-System&Clock Frequency&Cores / Socket&Total Sockets&LLC Size\newline~/ Socket&Total Memory&Array Size&Operating\newline System&Compiler\\
+System&Clock Frequency&Cores / \newline~Socket&Total Sockets&LLC Size\newline~/ Socket&Total Memory&Array Size&Operating\newline System&Compiler\\
 \midrule
-Cortex-A53      & 1.40Ghz & 4  & 1 & 2MiB  & 512MiB & 256MiB  & Ubuntu\newline 18.04 4.15.0 & GCC 7.4.0\\
+Cortex-A53      & 1.40Ghz & 4  & 1 & 512KiB  & 512MiB & 256MiB  & Ubuntu\newline 18.04 4.15.0 & GCC 7.4.0\\
 Cortex-A72      & 1.50Ghz & 4  & 1 & 1MiB   & 4GiB & 256MiB  & Debian\newline 10.1 4.19.75 & GCC 8.3.0\\
 Ryzen V1605B    & 1.58Ghz & 4  & 1 & 4MiB    & 32GiB & 15GiB & Ubuntu\newline 19.04 5.2.10&GCC 8.3.0\\
 Opteron 4130    & 2.60Ghz & 4  & 2 & 6MiB   & 64GiB & 15GiB & Centos7\newline 3.10.0&GCC 8.3.1\\
@@ -93,19 +106,8 @@ We utilize our normalized \textit{GAMs} metric, as introduced in Section~\ref{su
 \subsection{Results}
 \label{subsec:results}
 
-\begin{figure}[!t]
-\centering
-\includegraphics[width=3.5in]{figures/CENTRAL_GAMS.png}
-\caption{Central Benchmark GAMS}
-\label{fig:central_gams}
-\end{figure}
-
-\begin{figure}[!t]
-\centering
-\includegraphics[width=3.5in]{figures/PTRCHASE_GAMS.png}
-\caption{Pointer Chase Benchmark GAMS}
-\label{fig:ptrchase_gams}
-\end{figure}
+\subsubsection{Random Access}
+\label{subsubsec:random_access_res}
 
 \begin{figure}[!t]
 \centering
@@ -114,26 +116,17 @@ We utilize our normalized \textit{GAMs} metric, as introduced in Section~\ref{su
 \label{fig:rand_gams}
 \end{figure}
 
-\begin{figure}[!t]
-\centering
-\includegraphics[width=3.5in]{figures/SCATTER_GAMS.png}
-\caption{Scatter Benchmark GAMS}
-\label{fig:scatter_gams}
-\end{figure}
+We first examine our benchmark results from the Random Access kernel as shown in Figure~\ref{fig:rand_gams}.
+Overall, our test platforms manifest lower GAMs performance for this kernel than in the majority of subsequent benchmarks.
+This behavior can be directly attributed to the irregular, unpredictable memory access patterns inherent in this kernel.
+In particular, the Core i7-4980HQ, Opteron 4130, and Cortex-A72 systems showcase the poorest performance across all our test platforms when utilizing four or fewer threads.
+For the same number of threads, the Xeon E5-2695 v4, Core i7-3930k, and Xeon-2698 v3 systems record the highest GAMs.
+Interestingly, with the exception of the Xeon E5-2695 v4, the Core i5-3210M system outperforms every other platform when executing with one or two threads.
+It is also notable that \textit{Compare-and-Swap} implementations of this kernel outperform atomic \textit{Add} implementations for the same platform.
+A noticeable drop in performance, corresponding to thread placement across sockets, is also distinguishable for the Xeon E5-2698 v3 platform in this benchmark. 
 
-\begin{figure}[!t]
-\centering
-\includegraphics[width=3.5in]{figures/GATHER_GAMS.png}
-\caption{Gather Benchmark GAMS}
-\label{fig:gather_gams}
-\end{figure}
-
-\begin{figure}[!t]
-\centering
-\includegraphics[width=3.5in]{figures/SG_GAMS.png}
-\caption{Scatter/Gather Benchmark GAMS}
-\label{fig:sg_gams}
-\end{figure}
+\subsubsection{Stride-1}
+\label{subsubsec:stride1_res}
 
 \begin{figure}[!t]
 \centering
@@ -142,9 +135,153 @@ We utilize our normalized \textit{GAMs} metric, as introduced in Section~\ref{su
 \label{fig:s1_gams}
 \end{figure}
 
+Our results for the Stride-1 kernel benchmark, shown in Figure~\ref{fig:s1_gams}, clearly contrast with those of the previous kernel.
+Herein, we see a marked improvement in the GAMs performance of the majority of our test platforms.
+This divergence is particularly prominent for some of our more powerful platforms such as the Xeon E5 class systems and the Core i7-3930k.
+However, the Core i7-4980HQ platform, which performed poorly in the Random Access benchmark, also makes unmistakable improvements.
+Orthogonally, the Core i5-3210M system performs much more poorly in comparison.
+Similar to the previous benchmark, a noticeable dip in performance occurs at 17 threads for the Xeon X5-2698 v3 system.
+Unlike the Random Access benchmark, there is little discernible performance difference between CAS and Add kernel implementations within a platform.
+For this benchmark, some unusual behavior is also demonstrated by the Xeon Phi 7250 platform, wherein the performance becomes erratic around 46 threads.
+We detail our conclusions in regard to this system in Section~\ref{subsec:analysis}.
+
+\subsubsection{Stride-N}
+\label{subsubsec:striden_res}
+
 \begin{figure}[!t]
 \centering
 \includegraphics[width=3.5in]{figures/STRIDEN_GAMS.png}
 \caption{Stride-N Benchmark GAMS}
 \label{fig:sn_gams}
 \end{figure}
+
+The results of our Stride-N kernel benchmark, illustrated in Figure~\ref{fig:sn_gams}, align most closely with those demonstrated by the Stride-1 benchmark.
+Here, the GAMs performance demonstrated by each platform is much higher than it was for the Random Access kernel.
+Indeed, the GAMs recorded for this kernel often exceed those shown for the Stride-1 kernel.
+We attribute this behavior to the fact that each thread operates most often on distinct memory segments within this kernel.
+This improves each thread's private cache utilization while minimizing cache line invalidations.
+It also explains the absence of the cross-socket performance degradation demonstrated by the Xeon E5-2698 v3 system in other kernel benchmarks.
+The platforms that performed well during the Stride-1 benchmark, such as the Core i7-3930k and Xeon E5-2698 v3 systems, also exhibit impressive performance for this kernel.
+Our Ryzen V1605B platform also performs well in comparison.
+Likewise, those that performed poorly for Stride-1, including the Opteron 4130 and Cortex systems, often replicate that behavior here.
+In fact, the Core i5-3210M system manifests the poorest performance in this benchmark across all tested platforms.
+Also similar to the Stride-1 benchmark, with the exception of the Xeon Phi 7250 system, very little performance variation is measured between the CAS and Add kernel implementations.
+Orthogonal to the Stride-1 benchmark, there appears to be a hard upper bound in regard to the scalabilty of each platform in this kernel.
+Given the behavior of this kernel and our demonstrated results, we ascribe this bound to be a function of each platform's cache size.
+The presence of the 16GiB MCDRAM, configured as a last-level cache, may also help explain why this generalization does not apply to the CAS kernel implementation on the Xeon Phi 7250 platform.
+
+\subsubsection{Pointer Chase}
+\label{subsubsec:ptrchase_res}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3.5in]{figures/PTRCHASE_GAMS.png}
+\caption{Pointer Chase Benchmark GAMS}
+\label{fig:ptrchase_gams}
+\end{figure}
+
+We next investigate the results of our Pointer Chase kernel benchmark.
+As shown in Figure~\ref{fig:ptrchase_gams}, the GAMs performance for this kernel across platforms is lower than each of the previously detailed benchmarks.
+Similar to the Random Access kernel, this kernel exhibits irregular, unpredictable memory access patterns.
+However, in contrast to the Random Access kernel, the Pointer Chase kernel performs atomic operations to memory locations within the \texttt{IDX} array.
+Since the size of this array is based on a static calculation, and is typically much smaller than the \texttt{VAL} array, this behavior results in an increased number of cache line invalidations and associated cache misses. 
+Consequently, the ability of the cache to improve system performance is severely diminished.
+As a result, the benefits to performance offered by large caches are effectively nullified in this benchmark and, in most cases, our more powerful systems perform little better than their counterparts for the same number of threads.
+Notably, the Xeon Phi 7250 platform almost uniformly records the lowest GAMs performance regardless of thread count.
+Further, its erratic behavior as the number of threads increases, as noted for other kernels, is particularly prominent in this benchmark and begins at a much lower number of threads.
+The results from this benchmark are also the first to showcase a distinct performance benefit for atomic add based kernel implementations as compared to CAS implementations.
+
+\subsubsection{Central}
+\label{subsubsec:central_res}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3.5in]{figures/CENTRAL_GAMS.png}
+\caption{Central Benchmark GAMS}
+\label{fig:central_gams}
+\end{figure}
+
+Although the Random Access and Pointer Chase kernels perform more poorly than the Stride-1 and Stride-N kernels, the GAMs measured in our Central kernel benchmark, as shown in Figure~\ref{fig:central_gams}, are by far the lowest of any in the CircusTent suite.
+As each thread performs an atomic operation to a common memory location during each iteration of the kernel loop, the measured GAMs performance for this kernel is directly dependent on the characteristics of a target architecture's memory subsystem.
+As the number of requests any memory hierarchy can service within a given time frame is limited, the GAMs performance of this kernel for a given platform will eventually plateau as the number of PEs increases.
+Although several of our systems, such as the Xeon E5 class systems, may not have reached their zenith, our results demonstrate that many of our platforms quickly reach such a plateau.
+Indeed, none of our test platforms ever exceed 2 GAMs in this benchmark.
+As contention for memory access represents a limiting factor in this benchmark, other performance components are less visible in these results.
+This explains the absence of any cross-socket performance decrease for the Xeon E5-2698 v3, or any other, platform.
+In addition to our Xeon E5 platforms, which continue to perform well across disparate kernels, our Ryzen V1605B system also registers exceptional performance in this benchmark.
+In fact, the Ryzen system has the highest GAMs performance of any platform for 4 or fewer threads.
+In contrast, our Cortex-A72, Cortex-A53, Xeon Phi 7250, and Core i5-3210M systems again represent the lowest performers for this benchmark.
+However, the Opteron 4130 platform performs slightly better than in previous trials.
+Similar the Pointer Chase kernel, the Central kernel seems to elicit higher performance from atomic Add implementations.
+
+\subsubsection{Scatter}
+\label{subsubsec:scatter_res}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3.5in]{figures/SCATTER_GAMS.png}
+\caption{Scatter Benchmark GAMS}
+\label{fig:scatter_gams}
+\end{figure}
+
+The results for our Scatter kernel benchmark are shown in Figure~\ref{fig:scatter_gams}.
+The most immediately observable characteristic of this graph is the steadily increasing performance of each platform as the number of threads increases.
+The only major exception to this behavior is manifested by the Xeon Phi 7250 system beyond approximately 56 threads.
+Another observation can be made in regard to the relative performance of our test platforms in this benchmark.
+In general, each system exhibits improved performance as compared to the Random Access and Pointer Chase benchmarks, but poorer performance compared to the Stride-1 and Stride-N benchmarks.
+Given what we know about the memory access patterns of these previous kernels, these results imply that the indexed access patterns present in the Scatter kernel are able to leverage the cache hierarchy to improve performance to some degree.
+The higher performance exhibited by our Xeon and i7-3930k systems lend some credence to this conclusion.
+However, the fact that our Core i5-3210M platform records the highest GAMs across all tested platforms suggests other factors may also play a role.
+Moreover, the poor performance of the Core i7-4980HQ system, which features an L4 cache in addition to a conventional L3, further increases this likelihood.
+Another notable characteristic of this kernel is that our Xeon e5-2698 v3 platform again experiences a drop in performance associated with cross-socket thread placement.
+However, this behavior only occurs for the atomic Add kernel implementation.
+Whereas other kernels demonstrated often demonstrated improved performance for a particular atomic primitive, the Scatter kernel seems to perform equally well for either CAS or Add kernel implementations.
+
+\subsubsection{Gather}
+\label{subsubsec:gather_res}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3.5in]{figures/GATHER_GAMS.png}
+\caption{Gather Benchmark GAMS}
+\label{fig:gather_gams}
+\end{figure}
+
+Given the relationship between the Scatter and Gather kernels, it is unsurprising that our Gather benchmark results share many similarities with those shown in Section~\ref{subsubsec:scatter_res}.
+in fact, as shown in Figure~\ref{fig:gather_gams}, the GAMs performance across platforms for this kernel closely emulate those exhibited by the Scatter kernel.
+Both demonstrate the same predictable improvement to the measured GAMs performance as the number of threads increases.
+Further, the GAMs performance of given a platform in the Gather benchmark is approximately equivalent to its performance in the Scatter benchmark.
+For our Xeon E5-2698 v3 platform, the cross-socket performance decline is also replicate for only the atomic Add kernel implementation. 
+Perhaps the most readily visible difference between the two sets of results is the fact that the erratic performance characteristics associated with our Xeon Phi 7250 platform begin at a lower thread count in the Gather benchmark
+
+\subsubsection{Scatter/Gather}
+\label{subsubsec:sg_res}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3.5in]{figures/SG_GAMS.png}
+\caption{Scatter/Gather Benchmark GAMS}
+\label{fig:sg_gams}
+\end{figure}
+
+\subsection{Analysis}
+\label{subsec:analysis}
+
+In many ways, the results gathered during our CircusTent evaluation conform to expectations.
+The variance of GAMs performance across different kernels, regardless of platform, is one such example.
+Here, the measured performance is highest in kernels that utilize uniform memory access patterns, such as the Stride-N and, in particular, Stride-1 kernels.
+These uniform access patterns leverage the principle of spatial locality to service a higher percentage of memory requests from the cache.
+As such, they improve performance for atomic operations in much the same manner that they do so for traditional loads/stores.
+In contrast, kernels that utilize unpredictable memory access patterns are often forced satisfy requests from main memory.
+Accordingly, the recorded GAMs performance of the Random Access and Pointer Chase kernels is much lower.
+The performance of the Scatter, Gather, and Scatter/Gather CircusTent kernels, which utilize semi-random, indexed access patterns, falls between these two classifications.
+Predictably, the Central kernel, wherein concurrent atomic operations to a single memory location are repeatedly performed, exhibits the lowest performance and quickly reaches an upper bound as the degree of contention rises.
+
+A similar generalization can be made in regard to the correlation between cache size and platform performance.
+Notably, the systems that sustain the highest GAMs performance across the distinct CircusTent kernels, such as the Xeon E5-2670 v2, Xeon E5-2695 v4, and Xeon E5-2698 v3, correspond to the those that feature the largest last-level caches.
+In contrast, the systems that often exhibit the poorest performance, including the Cortex-A53, Cortex-A72, and Opteron 4130, typically feature much smaller caches.
+This disparity directly illustrates the benefits a large cache size offers for atomic operation performance.
+Moreover, the fact that the Cortex-A53 consistently outperforms its otherwise more advanced counterpart, the Cortex-A72, reinforces this conclusion.
+These observations, consistent with conventional architectural wisdom, increase our confidence in the correctness and viability of the CircusTent benchmark suite.
+
+Our CircusTent evaluation also provides some new insight into the performance of atomic operations on our test platforms that is not so readily apparent.
