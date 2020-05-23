@@ -1,12 +1,5 @@
 % Previous Work Section
 
-\begin{figure*}[!t]
-\centering
-\includegraphics[width=5in]{figures/arch.pdf}
-\caption{CircusTent Architecture}
-\label{fig:ct_arch}
-\end{figure*}
-
 %\todo[inline]{I'd suggest to classify related work into a few categories and have a sub-section for each category to make the organization and presentation better structured. -Yong}
 % Done - Brody
 
@@ -39,7 +32,7 @@ For one platform utilizing a Xeon-E5 processor, they were unable to discern any 
 However, for the other platform featuring a Knights Landing Xeon Phi processor, they observe that threads pinned to cores coresident on the same tile were always scheduled sequentially.
 This is logical as this processor employs L2 caches that are shared between cores on the same tile, but does not include an LLC shared between all cores.
 
-Although each of the studies detailed above make important contributions and advance our understanding of atomic operations and synchronization primitives, they do so only in a limited number of carefully controlled scenarios.
+\textbf{Summary:} Although each of the studies detailed above make important contributions and advance our understanding of atomic operations and synchronization primitives, they do so only in a limited number of carefully controlled scenarios.
 As such, the behaviors and performance characteristics they observe may not be fully generalizable to varied architectures and applications.
 Furthermore, the specialized approaches they employ are applicable only for physically shared memory systems and not easily replicated.
 In contrast, CircusTent provides an infrastructure for benchmarking the performance of atomic operations that is built directly on conventional shared and distributed shared memory parallel programming models.
@@ -51,7 +44,7 @@ In this manner, CircusTent offers an easily accessible, uniform means of measuri
 Transactional memory (TM) represents an orthogonal approach to synchronization that has become increasingly prominent in recent years.
 Similar to the use of atomic operations, this paradigm seeks to avoid the performance overheads associated with lock-based synchronization.
 However, it targets concurrent accesses to shared data at a more coarse-grained level. 
-Rather than operating on a single value, as with an atomic operation, this approach encapsulates a series of instructions into a ``transaction".
+Rather than operating on a single value, as with an atomic operation, this approach encapsulates a series of instructions into a ``transaction''.
 In many ways, these transactions correspond to critical code segments traditionally protected using lock-based synchronization.
 In contrast, however, simultaneous accesses to the data underlying a transaction by distinct processing elements is not inherently prevented.
 Instead, operations on this data are speculatively performed and tracked across processing elements.
@@ -75,7 +68,7 @@ Bocchino et al. further expanded the notion of STM and developed the first imple
 Herein, the authors found that, when utilized in conjunction with the GASNet library, their implementation was able to efficiently scale to up to 512 processors.
 In addition to standalone HTM and STM methodologies, some studies have also sought to couple the performance of HTM together with the extensiblilty of STM in a hybrid approach \cite{baugh2008using}.
 
-An in-depth comparison of transactional memory and atomic-based synchronization is beyond the scope of this work.
+\textbf{Summary:} An in-depth comparison of transactional memory and atomic-based synchronization is beyond the scope of this work.
 However, it is worth noting that utilization of HTM is limited to systems with underlying microarchitecural support.
 Further, lock-based synchronization cannot always be directly translated to analagous transactional memory routines \cite{blundell2006subtleties}.
 As such, the performance of atomic operations and associated synchronization primitives will be of continued importance to future systems.
@@ -93,3 +86,5 @@ As detailed in Section~\ref{subsec:algorithms}, CircusTent also integrates kerne
 %\todo[inline]{Possibly add transactional memory papers depending on space}
 %\todo[inline]{I'd suggest to add TM discussion please, as reviewers would expect this discussion and a comparison when we discuss AMOs. -Yong}
 % Done - Brody
+
+\todo{If you may need more space, the related work section can be cut to be more concise, but still keep a copy of complete writing in case needed later on. -Yong}

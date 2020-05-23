@@ -24,7 +24,7 @@ Further, RMW atomics also constitute a particularly efficient and fine-grained s
 In many cases, application developers can replace mutex lock encapsulated critical code segments with ``lock-free'' atomic based synchronization.
 Doing so allows parallel execution to continue to the greatest degree possible and often significantly improves application performance.
 Many graph-based computational kernels, wherein only access to shared vertex and/or edge data need be coordinated, employ such an atomic-based synchronization scheme.
-In our previous work, we examined the GAP Benchmark Suite, which is designed to replicate the memory access patterns of graph workloads in a shared memory environment, in order to quantify the proportion of atomic operations \cite{beamer2015gap}.
+In our previous work, we examined the GAP Benchmark Suite~\cite{beamer2015gap}, which is designed to replicate the memory access patterns of graph workloads in a shared memory environment, in order to quantify the proportion of atomic operations.
 Therein, we found that, across all six included kernels, an average of 17.46\% of the total instructions were RMW atomic operation instructions \cite{rae}.
 In this and similar scenarios, the frequency of atomic memory operations results in contention that, while less significant than lock-based synchronization, has measurable effects on application performance.
 
@@ -43,6 +43,7 @@ The prevalence of distributed memory environments in high performance computing,
 In this work, we propose CircusTent, an open source, modular, and natively extensible benchmark suite for atomic operations.
 Designed to replicate common atomic memory access patterns in both shared and distributed memory environments, CircusTent provides system architects insight into the performance and scalability of a target architecture's memory hierarchy.
 As such, we believe CircusTent will serve as an invaluable tool for the design and prototyping of future systems.
+\todo{Please cite the CT repo. -Yong}
 
 The remainder of this work is organized as follows.
 Section~\ref{sec:previous_work} discusses relevant previous works pertaining to synchronization, atomic memory operations, and memory subsystem performance.

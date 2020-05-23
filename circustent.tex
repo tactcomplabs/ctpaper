@@ -10,7 +10,14 @@
 \subsection{Benchmark Overview}
 \label{subsec:benchmark_overview}
 
-The CircusTent benchmark infrastructure is designed to provide users and system architects the ability to derive normalized, quantitative performance data for atomic memory operations on parallel systems.  For this, we defined the following driving requirements.  
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=5in]{figures/arch.pdf}
+\caption{CircusTent Architecture}
+\label{fig:ct_arch}
+\end{figure*}
+
+The CircusTent benchmark infrastructure is designed to provide users and system architects the ability to derive normalized, quantitative performance data for atomic memory operations on parallel systems.  For this, we define the following driving requirements.  
 
 \subsubsection*{Derivation of Normalized Results}
 
@@ -45,6 +52,8 @@ In this manner, each programming model implementation has the ability to utilize
 In addition to the aforementioned initialization and allocation routine functions, each programming is also required to implement individual versions of each benchmark algorithm (Section~\ref{subsec:algorithms}).
 For each algorithm defined, the implementation can be optimized using the respective programming model constructs in order to induce optimal performance.    
 
+\todo{Please cite the repo again in this sub-section. -Yong}
+
 \subsection{Programming Models}
 \label{subsec:programming_models}
 
@@ -53,7 +62,7 @@ As mentioned above, each respective implementation contains a unique set of init
 The initialization functions perform any necessary device discovery, library initialization, and rudimentary setup as required for each programming model.
 Similarly, the memory allocation routines are utilized by each programming model to allocate and initialize two data structures.
 The \texttt{VAL} data structure is a linear array that that may span multiple nodes and contains target data.
-The \textit{IDX} data structure is also a linear array that may span multiples nodes and contains indices within the scope of the \texttt{VAL} data structure.
+The \texttt{IDX} data structure is also a linear array that may span multiples nodes and contains indices within the scope of the \texttt{VAL} data structure.
 Currently, all the backend implementations utilize unsigned 64-bit integers (\texttt{uint64\_t}) for each data and index value.  
 Notably, the initialization and allocation time is not included in the algorithmic runtime reported by the top-level driver functions.
 Finally, each of the respective models contains an optimized implementation of each kernel that utilizes both target atomic memory operation types, (\textit{atomic add} and \textit{compare and swap}).
@@ -291,7 +300,7 @@ The CircusTent implementation infrastructure supports the ability to override th
 \label{subsec:normalizingtheresults}
 
 Given the native extensibility of CircusTent to support a multitude of programming models and platforms, we seek to develop a normalized metric such that we can compare results across platforms and differing degrees of execution parallelism.
-For this, we introduce the \textit{GAMs} metric.  
+For this purpose, we introduce the \textit{GAMs} metric.  
 
 The \textit{GAMs}, or \textit{billions of atomic operations per second}, metric encapsulates the number of parallel execution elements (\textit{PEs}), the atomic operation algorithmic complexity, and the wall clock execution time into a single metric.
 As we see in Equation~\ref{eq:gams}, the metric is a ratio of the total number of atomic operations executed for all parallel execution elements (in billions) across all iterations and the wall clock execution time.
