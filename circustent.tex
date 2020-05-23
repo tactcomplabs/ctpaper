@@ -97,7 +97,7 @@ The final programming model currently utilized to implement a CircusTent backend
 xBGAS is a project to construct a microarchitectural extension to the RISC-V instruction set in order to provide instruction-level shared memory access across distributed memory systems.
 The xBGAS runtime infrastructure mimics the form and function of the OpenSHMEM infrastructure.
 It provides rudimentary memory management routines for hardware-accelerated symmetric heap allocation (\texttt{xbrtime\_malloc}) as well as function wrappers for xBGAS-accelerated global shared memory access instructions.
-The xBGAS backend directly employs atomic variants of these functions, \texttt{xbrtime\_ long\_atomic\_add} and \texttt{xbrtime\_long\_atomic\_compare\_swap}, to realize its constituent atomic operations.  
+The xBGAS backend directly employs atomic variants of these functions, \texttt{xbrtime\_ long\_atomic\_add} and \newline \texttt{xbrtime\_long\_atomic\_compare\_swap}, to realize its constituent atomic operations.  
 
 \subsection{Algorithms}
 \label{subsec:algorithms}
