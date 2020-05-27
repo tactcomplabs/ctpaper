@@ -316,14 +316,14 @@ In this case, the time taken to execute each CAS instruction is reduced in a man
 Further, writing the same value into each memory location during successive iterations of the kernel loop prevents cache-line invalidations.
 This directly improves the cache-hit rate at higher levels of the cache hierarchy for each thread when cache blocks are present in multiple private caches and improves overall performance.
 Taken together, these items explain the apparent performance discrepancy between the CAS and ADD implementations.
-\todo[inline]{@John - Is such an optimization present/likely or just wishful thinking on my part?}
+%\todo[inline]{@John - Is such an optimization present/likely or just wishful thinking on my part?}
 
 We also observe that the performance characteristics of two of our test platforms deviate from our expectations.
 Since our Core i7-4980HQ system features a 128 MiB shared L4 cache in addition to its L3, we anticipated that this platform would be one of the higher performers across kernels.
 For four of our benchmarks, however, this system generated only mediocre GAMS performance that seems more inline with its 6MiB L3 cache.
 Further, in our Random Access, Scatter, Gather, and Scatter/Gather benchmarks, it was by far the poorest performing platform.
 Given the random memory access patterns inherent in these kernels, it seems likely that many cache lines would be evicted from the L3 cache into the L4 during benchmark execution.
-Although we assume the eDRAM-based L4 cache has a higher latency than its sRAM counterparts, it would still be expected to service requests faster than main memory.
+Although we assume the eDRAM-based L4 cache has a higher latency than its SRAM counterparts, it would still be expected to service requests faster than main memory.
 As such, we are currently exploring the microarchitecture of this system's memory hierarchy to better understand these results.
 
 The performance of our Xeon Phi 7250 platform was also somewhat surprising.
