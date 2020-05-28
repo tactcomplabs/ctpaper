@@ -12,7 +12,7 @@ Consequently, well written applications utilize synchronization primitives, such
 Regrettably, the nature of parallel applications typically precludes the removal of all such synchronization methods as they are necessary to prevent race conditions associated with access to shared data structures and ensure program correctness.
 Given the impact synchronization plays on the scalability and performance of parallel applications, understanding and optimization of these routines is key.
 
-In many cases, the synchronization primitives described above are constructed using atomic memory operations (AMOs).
+In many cases, the synchronization primitives described above are constructed using atomic memory operations.
 Abstractly, an atomic memory operation can be defined as an operation that is uninterruptible.
 Although an atomic operation may be composed of several smaller ``sub-operations'' that would, under other circumstances, necessitate the execution of multiple instructions to complete, herein these sub-operations are treated as a single, cohesive unit.
 In this work, we focus on a particularly prominent class of atomic memory operations known as read-modify-write (RMW) atomics.
@@ -34,16 +34,12 @@ For models designed specifically for physically shared memory systems, such as O
 However, for distributed shared memory parallel programming models, the implementation of ``remote atomics'' and associated synchronization primitives is more complex.
 In these models, access to a node's local shared memory must be coordinated not only between local PEs, but also among those located across a network fabric.
 Therefore, these remote atomic operations are typically built upon some combination of RDMA verbs, local barrier synchronizations, and ISA-level atomic instructions \cite{chen2017rdmahtm}\cite{kalia2016rdmadesign}.
-Utilizing a node's network interface card (NIC) to perform the local atomic operations can further optimize system performance in these models \cite{rae}.
+Utilizing a node's network interface card to perform the local atomic operations can further optimize system performance in these models \cite{rae}.
 The prevalence of distributed memory environments in high performance computing, in conjunction with inherent limits to mulitcore scaling \cite{esmaeilzadeh2011silicon}, illustrate the need to understand the behavior of these remote atomic operations when designing future systems.
-
-%\todo[inline]{The intro section is a bit long as of now; the above paragraph can be considered to move to Sec. 2, as a background discussion. -Yong}
-% Given the increased length of the previous work section, leaving for now so that the introduction isn't dwarfed by PW. Could still be moved if needed. -Brody
 
 In this work, we propose CircusTent, an open source, modular, and natively extensible benchmark suite for atomic operations.
 Designed to replicate common atomic memory access patterns in both shared and distributed memory environments, CircusTent provides system architects insight into the performance and scalability of a target architecture's memory hierarchy.
-As such, we believe CircusTent will serve as an invaluable tool for the design and prototyping of future systems.
-\todo{Please cite the CT repo. -Yong}
+As such, we believe CircusTent will serve as an invaluable tool for the design and prototyping of future systems~\cite{ctrepo}.
 
 The remainder of this work is organized as follows.
 Section~\ref{sec:previous_work} discusses relevant previous works pertaining to synchronization, atomic memory operations, and memory subsystem performance.

@@ -1,12 +1,5 @@
 % CircusTent Section
 
-%\begin{figure*}[!t]
-%\centering
-%\includegraphics[width=5in]{figures/arch.pdf}
-%\caption{CircusTent Architecture}
-%\label{fig:ct_arch}
-%\end{figure*}
-
 \subsection{Benchmark Overview}
 \label{subsec:benchmark_overview}
 
@@ -17,7 +10,8 @@
 \label{fig:ct_arch}
 \end{figure*}
 
-The CircusTent benchmark infrastructure is designed to provide users and system architects the ability to derive normalized, quantitative performance data for atomic memory operations on parallel systems.  For this, we define the following driving requirements.  
+The CircusTent benchmark infrastructure is designed to provide users and system architects the ability to derive normalized, quantitative performance data for atomic memory operations on parallel systems~\cite{ctrepo}.
+For this, we define the following driving requirements.  
 
 \subsubsection*{Derivation of Normalized Results}
 
@@ -42,7 +36,7 @@ As each programming model implementation is supported via a base implementation 
 Finally, in order to mimic a wide array of application memory access patterns, CircusTent is designed to support eight pathological kernels that replicate common memory access patterns of interest.
 The patterns include unit stride, non unit stride, irregular, or entirely random accesses to memory locations using a variety of loop constructs.
 Further, each pathological kernel can be implemented using various different styles of atomic memory operations.
-We currently implement CircusTent backends using atomic \textit{Add} and \textit{Compare-and-Swap}.    
+We currently implement CircusTent backends using atomic \textit{Add} and \textit{Compare-and-Swap} (CAS).    
 
 As we see in Figure~\ref{fig:ct_arch}, the CircusTent infrastructure is constructed using a C++ inheritance model whereby operations such as command line parsing and benchmark option handling are common across all supported programming models.
 The implementation template is a C++ base class that is utilized to encapsulate each individual programming model implementation.
@@ -50,9 +44,7 @@ Operations such as memory allocation, deallocation, and programming model initia
 In this manner, each programming model implementation has the ability to utilize it's respective initialization and allocation routines.
 
 In addition to the aforementioned initialization and allocation routine functions, each programming is also required to implement individual versions of each benchmark algorithm (Section~\ref{subsec:algorithms}).
-For each algorithm defined, the implementation can be optimized using the respective programming model constructs in order to induce optimal performance.    
-
-\todo{Please cite the repo again in this sub-section. -Yong}
+For each algorithm defined, the implementation can be optimized using the respective programming model constructs in order to induce optimal performance.
 
 \subsection{Programming Models}
 \label{subsec:programming_models}
@@ -65,7 +57,7 @@ The \texttt{VAL} data structure is a linear array that that may span multiple no
 The \texttt{IDX} data structure is also a linear array that may span multiples nodes and contains indices within the scope of the \texttt{VAL} data structure.
 Currently, all the backend implementations utilize unsigned 64-bit integers (\texttt{uint64\_t}) for each data and index value.  
 Notably, the initialization and allocation time is not included in the algorithmic runtime reported by the top-level driver functions.
-Finally, each of the respective models contains an optimized implementation of each kernel that utilizes both target atomic memory operation types, (\textit{atomic add} and \textit{compare and swap}).
+Finally, each of the respective models contains an optimized implementation of each kernel that utilizes both target atomic memory operation types, atomic \textit{Add} and \textit{Compare-and-Swap}.
 
 \subsubsection{OpenMP}
 \label{subsubsec:openmp}
@@ -95,10 +87,10 @@ operations, and remote direct memory access (RDMA) operations on the interconnec
 
 The next programming model utilized to implement a CircusTent backend is OpenSHMEM~\cite{openshmemspec}~\cite{Poole2011}.
 OpenSHMEM consists of a runtime infrastructure and set of common function interfaces that provide distributed memory systems a shared memory view via a symmetric heap managed by the runtime.  
-Similar to other parallel programming models such as MPI, OpenSHMEM provides native interfaces for atomics, one-sided communication, as well as native memory allocation routines.
+Similar to other parallel programming models such as MPI, OpenSHMEM provides native interfaces for atomics, one-sided communication, and memory allocation routines.
 For CircusTent, we utilize the standard set of OpenSHMEM memory management routines (\texttt{shmem\_malloc}) in order to allocate the \texttt{VAL} and \texttt{IDX} constructs in the symmetric heap.
 Similar to the MPI-3 implementation, we utilize native OpenSHMEM one-sided operations, \texttt{shmem\_long\_get} and \texttt{shmem\_long\_put}, to fetch normal index values.
-We utilize the native OpenSHMEM atomic function interfaces, \texttt{shmem\_long\_fadd} and \texttt{shmem\_long\_cswap}, for atomic add and compare-and-swap, respectively.  
+We utilize the native OpenSHMEM atomic function interfaces, \texttt{shmem\_long\_fadd} and \texttt{shmem\_long\_cswap}, for atomic \textit{Add} and \textit{Compare-and-Swap}, respectively.  
 
 \subsubsection{xBGAS}
 \label{subsubsec:xbgas}
@@ -114,7 +106,7 @@ The xBGAS backend directly employs atomic variants of these functions, \texttt{x
 The CircusTent infrastructure contains eight individual benchmark kernels.
 Each kernel is described in terms of a generic atomic memory operation, or \textit{AMO}.  
 However, each kernel may be implemented using any platform-supported atomic operations.
-In the case of this study, we utilize atomic \textit{Add} and atomic \textit{Compare-and-Swap} (CAS) operations to implement each kernel, respectively.  
+In the case of this study, we utilize atomic \textit{Add} and atomic \textit{Compare-and-Swap} operations to implement each kernel, respectively.  
 
 \subsubsection{Random Access}
 \label{subsubsec:random_access}
@@ -234,7 +226,7 @@ AMO(VAL[dest], val) // VAL[dest] = val
 \subsubsection{Gather}
 \label{subsubsec:gather}
 
-The Gather kernel can be considered the inverse of the Scatter kernel detailed above (Algorithm~\ref{alg:7}).
+The Gather kernel (Algorithm~\ref{alg:7}) can be considered the inverse of the Scatter kernel detailed above.
 Whereas the latter utilizes sequential loads in conjunction with random stores, the former combines loads from randomly indexed locations with sequential stores.
 Here, an atomic operation first procures a random index, \texttt{src}, from the \texttt{IDX} array.
 A store value, \texttt{val}, is then set from the memory location corresponding to \texttt{src} using a subsequent atomic operation.

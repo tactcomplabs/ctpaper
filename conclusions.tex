@@ -8,7 +8,7 @@ In this work, we introduced the open source CircusTent benchmark suite to fill t
 Orthogonal to previous works, CircusTent measures the performance of disparate architectures in a generalized manner using common parallel programming paradigms.
 Herein, we showcased the modular design of CircusTent that enables native extensibilty for future refinements and additional programming models.
 We explored our current backend implementations, designed for both physically shared and distributed shared memory systems, built upon the OpenMP, MPI, and OpenSHMEM programming models as well the xBGAS microarchitecture extension.
-We also detailed the eight kernels, designed to replicate atomic memory access patterns common in high-performance computing applications, that constitute the CircusTent suite.
+We also detailed the eight kernels, designed to replicate memory access patterns common in high-performance computing applications, that constitute the CircusTent suite.
 
 Finally, utilizing our OpenMP backend, we performed an extensive evaluation of CircusTent across fourteen diverse test platforms.
 Through the use of our normalized \textit{GAMs} metric, we were able to directly measure and compare the performance of these disparate systems.
@@ -16,4 +16,4 @@ In line with previous work and conventional wisdom, our results showed that both
 However, our evaluation also revealed some new insights and diverged from our expectations with regard to several of our test platforms.
 
 We feel our evaluation clearly demonstrates the capabilities and value of the CircusTent benchmark suite.
-As such, we believe that CircusTent will prove to be a useful tool that aids in both the benchmarking of existing systems as well as the design and prototyping of future systems.
+As such, we believe that CircusTent will prove to be a useful tool that aids in the benchmarking of existing systems as well as the design and prototyping of future systems.

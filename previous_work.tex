@@ -1,13 +1,10 @@
 % Previous Work Section
 
-%\todo[inline]{I'd suggest to classify related work into a few categories and have a sub-section for each category to make the organization and presentation better structured. -Yong}
-% Done - Brody
-
 \subsection{Atomic Operations \& Synchronization}
 \label{subsec:amos_sync}
 
 Several previous studies have examined the behavior and performance characteristics of atomic operations and synchronization primitives.
-Villa et al. explored the efficiency and scalabilty of barrier based synchronization on manycore architectures utilizing intraprocessor interconnects modeled after the design of network-on-chip (NOC) paradigms \cite{villa2008barriers}.
+Villa et al. explored the efficiency and scalabilty of barrier based synchronization on manycore architectures utilizing intraprocessor interconnects modeled after the design of network-on-chip paradigms \cite{villa2008barriers}.
 In this study, the authors evaluated four different barrier algorithms, implemented in both hardware and software, using a cycle-accurate simulator.
 Trials conducted using up to 128 cores, arranged in five different topologies, revealed that, at least for similar configurations, hardware based barrier implementations exhibit better performance for intraprocessor synchronization.
 
@@ -82,9 +79,3 @@ More specifically, Spatter measures an architecture's memory performance with re
 Highly tunable, Spatter provides an efficient means of measuring these irregular, non-uniform memory access patterns increasingly common to HPC applications in a manner previous existing benchmarks could not.
 Currently, Spatter supports both OpenMP and CUDA backend implementations for both CPU and GPU-based platforms.
 As detailed in Section~\ref{subsec:algorithms}, CircusTent also integrates kernels that replicate these memory access patterns, but does so using atomic operations in lieu of traditional loads and stores.
-
-%\todo[inline]{Possibly add transactional memory papers depending on space}
-%\todo[inline]{I'd suggest to add TM discussion please, as reviewers would expect this discussion and a comparison when we discuss AMOs. -Yong}
-% Done - Brody
-
-\todo{If you may need more space, the related work section can be cut to be more concise, but still keep a copy of complete writing in case needed later on. -Yong}
