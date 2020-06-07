@@ -1,7 +1,7 @@
 % Benchmark Evaluation Section
 
-In order to verify and demonstrate the capabilities of the CircusTent benchmark suite, in this section we conduct an evaluation of a diverse set of platforms with respect to atomic memory operations.
-We first introduce our test platforms and briefly describe pertinent details of their architecture in Section~\ref{subsec:platforms}.
+In order to verify and demonstrate the capabilities of the CircusTent benchmark suite, we have conducted an evaluation of a diverse set of platforms with respect to atomic memory operations.
+In this section, we first introduce our test platforms and briefly describe pertinent details of their architecture in Section~\ref{subsec:platforms}.
 We next detail our evaluation methodology in Section~\ref{subsec:methodology}.
 Results for each of the CircusTent benchmark kernels are presented in Section~\ref{subsec:results}.
 Finally, we analyze and discuss observed patterns and performance characteristics in Section~\ref{subsec:analysis}.
@@ -150,7 +150,7 @@ Our Ryzen V1605B platform also performs well in comparison.
 Likewise, those that performed poorly in the Stride-1 benchmark, including the Opteron 4130 and Cortex systems, often replicate that behavior here.
 In fact, the Core i5-3210M system manifests the poorest performance in this benchmark across all tested platforms.
 Also similar to the Stride-1 benchmark, with the exception of the Xeon Phi 7250 system, very little performance variation is measured between the CAS and Add kernel implementations.
-Orthogonal to the Stride-1 benchmark, there appears to be a hard upper bound in regard to the scalabilty of each platform for this kernel.
+Orthogonal to the Stride-1 benchmark, there appears to be a hard upper bound in regard to the scalability of each platform for this kernel.
 Given the behavior of this kernel and our demonstrated results, we ascribe this bound to be a function of each platform's cache size.
 The presence of the on-package 16GiB MCDRAM, configured as a last-level cache, may also help explain why this generalization does not apply to the CAS kernel implementation on the Xeon Phi 7250 platform.
 
@@ -236,7 +236,7 @@ In fact, as shown in Figure~\ref{fig:gather_gams}, the \textit{GAMs} performance
 Both benchmarks demonstrate the same predictable improvement to the measured \textit{GAMs} performance as the number of threads increases.
 Further, the \textit{GAMs} performance of given a platform in the Gather benchmark is approximately equivalent to its performance in the Scatter benchmark.
 For our Xeon E5-2698 v3 platform, the now familiar cross-socket performance decline is also replicated only for the atomic Add implementation of the Gather kernel.
-WIth the exception of this system, the performance of the Gather kernel is likewise comparable for atomic Add and CAS implementations across systems and thread counts. 
+With the exception of this system, the performance of the Gather kernel is likewise comparable for atomic Add and CAS implementations across systems and thread counts. 
 Perhaps the most readily visible difference between the two sets of results is the fact that the erratic performance characteristics associated with our Xeon Phi 7250 system begin at a lower thread count in the Gather benchmark.
 
 \subsubsection{Scatter/Gather}

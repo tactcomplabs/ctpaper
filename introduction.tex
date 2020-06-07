@@ -35,7 +35,7 @@ However, for distributed shared memory parallel programming models, the implemen
 In these models, access to a node's local shared memory must be coordinated not only between local PEs, but also among those located across a network fabric.
 Therefore, these remote atomic operations are typically built upon some combination of RDMA verbs, local barrier synchronizations, and ISA-level atomic instructions \cite{chen2017rdmahtm}\cite{kalia2016rdmadesign}.
 Utilizing a node's network interface card to perform the local atomic operations can further optimize system performance in these models \cite{rae}.
-The prevalence of distributed memory environments in high performance computing, in conjunction with inherent limits to mulitcore scaling \cite{esmaeilzadeh2011silicon}, illustrate the need to understand the behavior of these remote atomic operations when designing future systems.
+The prevalence of distributed memory environments in high performance computing, in conjunction with inherent limits to multicore scaling \cite{esmaeilzadeh2011silicon}, illustrate the need to understand the behavior of these remote atomic operations when designing future systems.
 
 In this work, we propose CircusTent, an open source, modular, and natively extensible benchmark suite for atomic operations.
 Designed to replicate common atomic memory access patterns in both shared and distributed memory environments, CircusTent provides system architects insight into the performance and scalability of a target architecture's memory hierarchy.

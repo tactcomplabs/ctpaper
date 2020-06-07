@@ -43,7 +43,7 @@ Similar to the use of atomic operations, this paradigm seeks to avoid the perfor
 However, it targets concurrent accesses to shared data at a more coarse-grained level. 
 Rather than operating on a single value, as with an atomic operation, this approach encapsulates a series of instructions into a ``transaction''.
 In many ways, these transactions correspond to critical code segments traditionally protected using lock-based synchronization.
-In contrast, however, simultaneous accesses to the data underlying a transaction by distinct processing elements is not inherently prevented.
+In contrast, however, simultaneous accesses to the data underlying a transaction by distinct processing elements are not inherently prevented.
 Instead, operations on this data are speculatively performed and tracked across processing elements.
 In the absence of a conflict, changes to the data are committed.
 If a conflict is detected, these changes are discarded instead.
@@ -63,11 +63,11 @@ This initial implementation was, however, only applicable to static transactions
 This limitation was largely overcome in a subsequent work by Herlihy et al. \cite{herlihy2003stmdsds}.
 Bocchino et al. further expanded the notion of STM and developed the first implementation targeted towards Partitioned Global Address Space models in distributed memory environments \cite{bocchino2008stm}.
 Herein, the authors found that, when utilized in conjunction with the GASNet library, their implementation was able to efficiently scale to up to 512 processors.
-In addition to standalone HTM and STM methodologies, some studies have also sought to couple the performance of HTM together with the extensiblilty of STM in a hybrid approach \cite{baugh2008using}.
+In addition to standalone HTM and STM methodologies, some studies have also sought to couple the performance of HTM together with the extensibility of STM in a hybrid approach \cite{baugh2008using}.
 
 \textbf{Summary:} An in-depth comparison of transactional memory and atomic-based synchronization is beyond the scope of this work.
 However, it is worth noting that utilization of HTM is limited to systems with underlying microarchitecural support.
-Further, lock-based synchronization cannot always be directly translated to analagous transactional memory routines \cite{blundell2006subtleties}.
+Further, lock-based synchronization cannot always be directly translated to analogous transactional memory routines \cite{blundell2006subtleties}.
 As such, the performance of atomic operations and associated synchronization primitives will be of continued importance to future systems.
 
 \subsection{Memory Benchmarks}
