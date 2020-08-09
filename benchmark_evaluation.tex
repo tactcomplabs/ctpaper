@@ -1,7 +1,9 @@
 % Benchmark Evaluation Section
 
-In order to verify and demonstrate the capabilities of the CircusTent benchmark suite, we have conducted an evaluation of a diverse set of platforms with respect to atomic memory operations.
-In this section, we first introduce our test platforms and briefly describe pertinent details of their architecture in Section~\ref{subsec:platforms}.
+In order to verify and demonstrate the capabilities of the CircusTent benchmark suite, we conducted an evaluation of a diverse set of platforms with respect to atomic memory operations.
+In the interest of space, and in order to provide a comprehensive introduction to CircusTent and its constituent kernels in Section~\ref{sec:circustent}, we evaluated only our OpenMP backend in this work.
+The evaluation of other backend implementations is left for a future work.
+We first introduce our test platforms and briefly describe pertinent details of their architecture in Section~\ref{subsec:platforms}.
 We next detail our evaluation methodology in Section~\ref{subsec:methodology}.
 Results for each of the CircusTent benchmark kernels are presented in Section~\ref{subsec:results}.
 Finally, we analyze and discuss observed patterns and performance characteristics in Section~\ref{subsec:analysis}.
@@ -316,8 +318,9 @@ Notably, this behavior became increasingly aggravated as the thread count rose a
 We believe this system's erratic behavior and sub-par performance can be attributed to several factors associated with its complex memory subsystem.
 First, the absence of a true-last level cache on this platform directly entails some degree of performance degradation.
 As the L1 and L2 caches on this system cannot cache all the necessary information, requests must often be serviced from the MCDRAM.
-Although the latency of this MCDRAM is a significant improvement over that of main memory, it is also considerably poorer than that of a true L3 cache.
-As such, any requests that would be serviced by the L3 cache on other systems incur a significant penalty for the Xeon Phi 7250 platform.
+Although one might expect this MCDRAM to improve performance in comparison to main memory, the opposite effect occurs.
+Here, the increased latency of the MCDRAM combined with the irregular memory access patterns exhibited by the CircusTent kernels diminish the platform's performance~\cite{peng2017exploring}.
+As such, any requests that would be serviced by the L3 cache, or even main memory, on other systems often incur a significant penalty for the Xeon Phi 7250 platform.
 Second, and perhaps even more importantly, the 34 L2 caches resident on each tile in this processor are kept fully coherent.
 As any invalidation for shared cache lines must be propagated across this complex system, these operations are exceedingly costly.
 These expensive operations, combined with the fact that any core possessing an invalidated cache line must then service a subsequent request from the MCDRAM, make shared cache lines across cores not resident within the same tile an expensive proposition for this system.
