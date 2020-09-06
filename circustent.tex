@@ -53,7 +53,7 @@ The current set of programming models supported by CircusTent includes OpenMP, M
 As mentioned above, each respective implementation contains a unique set of initialization, memory allocation, and execution functions.
 The initialization functions perform any necessary device discovery, library initialization, and rudimentary setup as required for each programming model.
 Similarly, the memory allocation routines are utilized by each programming model to allocate and initialize two data structures.
-The \texttt{VAL} data structure is a linear array that that may span multiple nodes and contains target data.
+The \texttt{VAL} data structure is a linear array that may span multiple nodes and contains target data.
 The \texttt{IDX} data structure is also a linear array that may span multiples nodes and contains indices within the scope of the \texttt{VAL} data structure.
 Currently, all the backend implementations utilize unsigned 64-bit integers (\texttt{uint64\_t}) for each data and index value.  
 Notably, the initialization and allocation time is not included in the algorithmic runtime reported by the top-level driver functions.
